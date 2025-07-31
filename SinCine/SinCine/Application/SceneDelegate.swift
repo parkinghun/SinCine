@@ -19,11 +19,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let launch = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
         
+        let nav = BaseNavigationController(rootViewController: OnboardingViewController())
+        
+        
         window?.rootViewController = launch
         window?.makeKeyAndVisible()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.window?.rootViewController = ViewController()
+            self.window?.rootViewController = nav
         }
     }
 

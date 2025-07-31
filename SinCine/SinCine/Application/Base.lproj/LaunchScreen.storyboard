@@ -17,17 +17,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splash" translatesAutoresizingMaskIntoConstraints="NO" id="hBU-eS-mQc">
-                                <rect key="frame" x="96.666666666666686" y="275.66666666666669" width="200" height="220.66666666666669"/>
+                                <rect key="frame" x="96.666666666666686" y="255.66666666666669" width="200" height="220.66666666666669"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="박성훈" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Ju-K9-DTx">
-                                <rect key="frame" x="174" y="612.33333333333337" width="45" height="21"/>
+                                <rect key="frame" x="174" y="584.33333333333337" width="45" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SinCine" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h3h-S5-OV6">
-                                <rect key="frame" x="144.66666666666666" y="556.33333333333337" width="103.66666666666666" height="36"/>
-                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="30"/>
+                                <rect key="frame" x="124.66666666666669" y="516.33333333333337" width="144" height="48"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="40"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -35,12 +35,12 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="hBU-eS-mQc" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-40" id="5CM-Qi-ZAs"/>
+                            <constraint firstItem="hBU-eS-mQc" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-60" id="5CM-Qi-ZAs"/>
                             <constraint firstItem="4Ju-K9-DTx" firstAttribute="top" secondItem="h3h-S5-OV6" secondAttribute="bottom" constant="20" id="jcz-vO-gXE"/>
                             <constraint firstItem="4Ju-K9-DTx" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="pjn-LU-s0I"/>
                             <constraint firstItem="hBU-eS-mQc" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="t4a-4C-178"/>
                             <constraint firstItem="h3h-S5-OV6" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="tqp-6a-agZ"/>
-                            <constraint firstItem="h3h-S5-OV6" firstAttribute="top" secondItem="hBU-eS-mQc" secondAttribute="bottom" constant="60" id="wiH-np-skh"/>
+                            <constraint firstItem="h3h-S5-OV6" firstAttribute="top" secondItem="hBU-eS-mQc" secondAttribute="bottom" constant="40" id="wiH-np-skh"/>
                         </constraints>
                     </view>
                 </viewController>
