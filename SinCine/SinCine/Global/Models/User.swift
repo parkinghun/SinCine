@@ -9,7 +9,12 @@ import Foundation
 
 struct User: Codable {
     var nickname: String
-    var date: String
-    var like: Int  // 영화에 대한 데이터 타입으로 변경
-    var recentSearch: String  // 마찬가지
+    var date: Date = .now
+    var like: Int = 0
+    var recentSearch: [String] = []
+    
+    var formattedDate: String {
+        let locale = Locale(identifier: "ko-KR")
+        return date.formatted(.dateTime.locale(locale).year(.twoDigits).month().day())
+    }
 }

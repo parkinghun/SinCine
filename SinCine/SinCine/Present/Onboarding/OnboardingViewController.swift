@@ -10,6 +10,7 @@ import UIKit
 final class OnboardingViewController: UIViewController {
 
     let onboardingView = OnboardingView()
+    let userDefaultsManager = UserDefaultsManager<User>(key: "User")
     
     override func loadView() {
         self.view = onboardingView
@@ -22,7 +23,9 @@ final class OnboardingViewController: UIViewController {
     }
 
     private func configure() {
-        onboardingView.closure = {
+        onboardingView.closure = { [weak self] in
+            guard let self else { return }
+            
             print(#function)
             let vc = UIViewController()
             vc.view.backgroundColor = .black

@@ -14,6 +14,7 @@ class BaseView: UIView, ConfigureViewProtocol {
         configureHierachy()
         configureLayout()
         configureView()
+        configure()
     }
     
     @available(*, unavailable)
@@ -25,7 +26,9 @@ class BaseView: UIView, ConfigureViewProtocol {
     
     func configureLayout() { }
     
-    func configureView() {
+    func configureView() { }
+    
+    private func configure() {
         backgroundColor = Colors.black
     }
 }

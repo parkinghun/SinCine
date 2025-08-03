@@ -8,17 +8,17 @@
 import UIKit
 
 final class BorderButton: UIButton {
-    convenience init(title: String) {
+    convenience init(title: String, color: UIColor = Colors.mainColor) {
         self.init(type: .custom)
         
         self.setTitle(title, for: .normal)
-        self.setTitleColor(Colors.mainColor, for: .normal)
+        self.setTitleColor(color, for: .normal)
         self.titleLabel?.font = .semiBold
-        self.tintColor = Colors.mainColor
+        self.tintColor = color
         self.backgroundColor = Colors.black
         self.layer.cornerRadius = 22
         self.clipsToBounds = true
-        self.layer.borderColor = Colors.mainColor.cgColor
+        self.layer.borderColor = color.cgColor
         self.layer.borderWidth = 2
     }
 }
