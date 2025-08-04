@@ -27,7 +27,7 @@ final class OnboardingViewController: UIViewController, ConfigureViewControllerP
             guard let self else { return }
             
             print(#function)
-            let vc = NicknameSettingViewController()
+            let vc = NicknameSettingViewController(isDetailView: false, isModal: false)
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

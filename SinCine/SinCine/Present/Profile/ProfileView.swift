@@ -8,7 +8,13 @@
 import UIKit
 import SnapKit
 
+protocol ProfileViewDelegate: AnyObject {
+    func handleTapGestureAction()
+}
+
 final class ProfileView: BaseView {
+    
+    weak var delegate: ProfileViewDelegate?
     
     let nicknameLabel = {
         let label = UILabel()
@@ -24,6 +30,7 @@ final class ProfileView: BaseView {
         bt.configuration?.imagePlacement = .trailing
         bt.configuration?.baseForegroundColor = Colors.darkGray
         bt.configuration?.imagePadding = 8
+        bt.isUserInteractionEnabled = false
         return bt
     }()
 
@@ -78,5 +85,13 @@ final class ProfileView: BaseView {
     
     override func configureView() {
         backgroundColor = UIColor(hexCode: "2F2F2F")
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(stackViewTapped))
+        
+        profileStackView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func stackViewTapped() {
+        delegate?.handleTapGestureAction()
     }
 }

@@ -28,9 +28,9 @@ struct Movie: Decodable {
     let posterPath: String?
     let genreIds: [Int]
     let releaseDate: String
-    // 좋아요 (likeBT)
     
     let genre: [Genre] = []
+//    var isLiked: Bool = false
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -41,9 +41,9 @@ struct Movie: Decodable {
         case releaseDate = "release_date"
     }
     
-    var posterURL: String {
-        guard let posterPath else { return "" }
-        return  "https://image.tmdb.org/t/p/w500/\(posterPath)"
+    var posterURL: URL? {
+        guard let posterPath else { return nil }
+        return URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)")
     }
     
     // 장르

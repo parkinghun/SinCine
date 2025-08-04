@@ -16,7 +16,8 @@ protocol NicknameViewDelegate: AnyObject {
 final class NicknameView: BaseView {
     
     weak var delegate: NicknameViewDelegate?
-    var isDetaiView: Bool?
+    var isDetailView: Bool?
+    var isModal: Bool?
     
     // TextField
     let nicknameTextField = {
@@ -65,21 +66,19 @@ final class NicknameView: BaseView {
     }()
     
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(isDetaiView: Bool, isModal: Bool) {
+        self.isDetailView = isDetaiView
+        self.isModal = isModal
         
-    }
-    
-    convenience init(isDetaiView: Bool) {
-        self.init(frame: .zero)
-
-        self.isDetaiView = isDetaiView
-        
+        super.init(frame: .zero)
         configureHierachy()
         configureLayout()
         configureView()
         setupAction()
+        
+        configureUI()
     }
+    
     
     func configureTextField(text: String) {
         nicknameTextField.text = text
@@ -134,14 +133,22 @@ final class NicknameView: BaseView {
     }
     
     override func configureView() {
-        guard let isDetaiView else { return }
         
-        if isDetaiView {
+    }
+    
+    private func configureUI() {
+        guard let isDetailView,
+              let isModal else { return }
+        
+        if isDetailView {
             editButton.isHidden = true
             completeButton.isHidden = true
         } else {
             nicknameTextField.isUserInteractionEnabled = false
             stateLabel.isHidden = true
         }
+        
+        bottomStackView.isHidden = isModal
     }
+    
 }

@@ -14,6 +14,7 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
         let label = UILabel()
         label.configure(text: "Test", color: Colors.black, font: .medium)
         label.textAlignment = .center
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
         return label
     }()
     
@@ -21,7 +22,7 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
         let bt = UIButton()
         bt.setImage(Images.xmark, for: .normal)
         bt.tintColor = Colors.black
-        bt.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        bt.setContentHuggingPriority(.required, for: .horizontal)
         return bt
     }()
     
@@ -29,9 +30,12 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
         let sv = UIStackView(arrangedSubviews: [keywordLabel, deleteButton])
         sv.axis = .horizontal
         sv.spacing = 4
-        sv.alignment = .fill
+        sv.alignment = .center
         sv.distribution = .fill
         sv.backgroundColor = Colors.white
+        
+        sv.isLayoutMarginsRelativeArrangement = true
+        sv.layoutMargins = UIEdgeInsets(top: 5, left: 8, bottom: 8, right: 5)
         return sv
     }()
     
@@ -58,6 +62,10 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
         fatalError("init(coder:) has not been implemented")
     }
     
+    func configure(keyword: String) {
+        keywordLabel.text = keyword
+    }
+    
     
 }
 
@@ -70,20 +78,9 @@ extension RecentSearchCollectionViewCell: ConfigureViewProtocol {
         cellStackView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        
-        deleteButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(8)
-            make.size.equalTo(20)
-        }
-        
-        keywordLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(12)
-        }
     }
     
     func configureView() {
         self.backgroundColor = .clear
     }
-    
-    
 }

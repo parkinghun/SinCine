@@ -42,9 +42,11 @@ final class CinemaMainView: BaseView {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 6
-        layout.itemSize = CGSize(width: 90, height: 30)
+        
+        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.showsHorizontalScrollIndicator = false
         collectionView.backgroundColor = .clear
         return collectionView
     }()
@@ -71,6 +73,7 @@ final class CinemaMainView: BaseView {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = padding
+        layout.minimumLineSpacing = padding
         layout.sectionInset = UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)
         layout.itemSize = CGSize(width: itemWidth, height: itemHeight)
         
@@ -114,7 +117,7 @@ final class CinemaMainView: BaseView {
         recentSearchCollectionView.snp.makeConstraints { make in
             make.top.equalTo(recentSearchLabel.snp.bottom).offset(12)
             make.horizontalEdges.equalToSuperview()
-            make.height.equalTo(30)
+            make.height.equalTo(35)
         }
         
         recentEmptyLabel.snp.makeConstraints { make in

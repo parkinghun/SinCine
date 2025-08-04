@@ -12,16 +12,35 @@ final class NetworkManager {
     
     static let shared = NetworkManager()
     
-    private let endpoint = EndPoint(apiType: .trending)
-    
     private init() { }
     
-    func fetchData<T: Decodable>(endPoint: EndPoint, data: T) {
-        guard let url = endpoint.url else { return }
-        AF.request(url, method: .get)
+    func fetchData<T: Decodable>(endPoint: EndPoint, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) {
+        
+        guard let url = endPoint.url else {
+            completion(.failure(NetworkError.invalidURL))
+            return
+        }
+        
+        let key = Bundle.main.apiKey
+        
+        let headers: HTTPHeaders = [
+            HTTPHeader(name: "Authorization", value: "Bearer \(key)")
+        ]
+        
+        
+        AF.request(url, method: .get, headers: headers)
             .validate(statusCode: 200..<300)
             .responseDecodable(of: T.self) { response in
-                dump(response.result)
+                switch response.result {
+                case .success(let result):
+                    completion(.success(result))
+                case .failure(let error):
+                    completion(.failure(.invalidURL))
+                }
             }
     }
+}
+
+enum NetworkError: Error {
+    case invalidURL
 }

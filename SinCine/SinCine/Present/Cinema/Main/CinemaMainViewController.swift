@@ -11,8 +11,13 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
     
     let cinemaMainView = CinemaMainView()
     
-    var recentKeyword: [String] = ["1", "2", "3"]
+    var recentKeyword: [String] = ["스파이더스파", "스파이더", "스파이더", "스파이더", "스파이더", "스파이더", "스파이더", "스파이더", "스파이더",]
     
+    var todayMovies: [Movie] = [] {
+        didSet {
+            cinemaMainView.todayMovieCollectionView.reloadData()
+        }
+    }
 //    UserManager.shared.currentUser?.recentSearch ?? [] {
 //        didSet {
 //            updateRecentSearchView()
@@ -31,6 +36,20 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
         configureProfile()
         setupDelegate()
         updateRecentSearchView()
+        getTodyMovie()
+    }
+    
+    func getTodyMovie() {
+        NetworkManager.shared.fetchData(endPoint: .init(apiType: .trending), type: MovieResult.self) { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+            case .success(let movieResult):
+                self.todayMovies = movieResult.results
+            case .failure(let error):
+                print("Failure - ", error)
+            }
+        }
     }
     
     private func updateRecentSearchView() {
@@ -48,13 +67,16 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
     }
     
     func setupNavigation(title: String) {
-        navigationController?.title = title
+        navigationItem.title = title
         navigationItem.backButtonDisplayMode = .minimal
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: Images.magnifyingglass, style: .plain, target: self, action: #selector(searchButtonTapped))
     }
     
     @objc private func searchButtonTapped() {
         print(#function)
+        let vc = CinemaSearchViewController()
+        navigationController?.pushViewController(vc, animated: true)
+        
     }
     
     private func setupDelegate() {
@@ -68,6 +90,9 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
         
         cinemaMainView.todayMovieCollectionView.register(TodayMovieCollectionViewCell.self, forCellWithReuseIdentifier: TodayMovieCollectionViewCell.identifier)
 
+        cinemaMainView.profileView.delegate = self
+        
+        
     }
     
 }
@@ -81,7 +106,7 @@ extension CinemaMainViewController: UICollectionViewDataSource {
             
 //            return UserManager.shared.currentUser?.recentSearch.count ?? 0
         } else {  // 오늘 영화
-            return 20
+            return todayMovies.count
         }
         
     }
@@ -90,18 +115,58 @@ extension CinemaMainViewController: UICollectionViewDataSource {
         if collectionView == cinemaMainView.recentSearchCollectionView {
             guard let cell = cinemaMainView.recentSearchCollectionView.dequeueReusableCell(withReuseIdentifier: RecentSearchCollectionViewCell.identifier, for: indexPath) as? RecentSearchCollectionViewCell else { return UICollectionViewCell() }
             
+            cell.configure(keyword: recentKeyword[indexPath.item])
             
             return cell
         } else {
             guard let cell = cinemaMainView.todayMovieCollectionView.dequeueReusableCell(withReuseIdentifier: TodayMovieCollectionViewCell.identifier, for: indexPath) as?TodayMovieCollectionViewCell else { return UICollectionViewCell() }
             
+            let movie = todayMovies[indexPath.item]
+            let isLike = LikeManager.shared.isLike(movieID: movie.id)
+            
+            cell.configureUI(data: movie)
+            cell.updateHeart(isLike: isLike)
+            cell.delegate = self
+            
             return cell
         }
     }
-    
-    
 }
 
 extension CinemaMainViewController: UICollectionViewDelegate {
     
+}
+
+extension CinemaMainViewController: ProfileViewDelegate {
+    func handleTapGestureAction() {
+        let nicknameSettingVC = NicknameSettingViewController(isDetailView: false, isModal: true)
+        
+        let nav = BaseNavigationController(rootViewController: nicknameSettingVC)
+        
+        nicknameSettingVC.settingDelegate = self
+        
+        present(nav, animated: true)
+    }
+}
+
+extension CinemaMainViewController: NicknameSettingVCDelegate {
+    func handleUserUpdate() {
+        guard let user = UserManager.shared.currentUser else { return }
+        cinemaMainView.profileView.configureUI(data: user)
+    }
+}
+
+extension CinemaMainViewController: TodayMovieCellDelegate {
+    func handleLikeButtonAction(cell: TodayMovieCollectionViewCell) {
+        print(#function)
+        
+        if let indexPath = cinemaMainView.todayMovieCollectionView.indexPath(for: cell) {
+            print("\(indexPath.item) 하트 눌림")
+            let movieId = todayMovies[indexPath.item].id
+            
+            LikeManager.shared.toggleLike(for: movieId)
+            
+            cinemaMainView.todayMovieCollectionView.reloadData()
+        }
+    }
 }

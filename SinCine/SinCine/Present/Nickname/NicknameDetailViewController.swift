@@ -9,8 +9,10 @@ import UIKit
 
 final class NicknameDetailViewController: UIViewController, ConfigureViewControllerProtocol {
     
-    let nicknameView = NicknameView(isDetaiView: true)
+    let nicknameView = NicknameView(isDetaiView: true, isModal: false)
     var nickname = ""
+    var isModal = false
+    
     
     override func loadView() {
         self.view = nicknameView
@@ -18,8 +20,7 @@ final class NicknameDetailViewController: UIViewController, ConfigureViewControl
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setupNavigation(title: "닉네임 설정")
+        setupNavigationItem()
         setupDelegate()
     }
     
@@ -34,7 +35,15 @@ final class NicknameDetailViewController: UIViewController, ConfigureViewControl
         settingVC.validMessage = isValid(text: nickname).state
         
     }
-
+    
+    private func setupNavigationItem() {
+        let title = isModal ? StringLiterals.NavigationTitle.editNickname.rawValue:
+        StringLiterals.NavigationTitle.nickname.rawValue
+        
+        setupNavigation(title: title)
+    }
+    
+    
     func configureTextField(text: String) {
         nicknameView.configureTextField(text: text)
     }
@@ -49,7 +58,7 @@ extension NicknameDetailViewController: UITextFieldDelegate {
     func textFieldDidChangeSelection(_ textField: UITextField) {
         guard let text = textField.text else { return }
         self.nickname = text
-
+        
         let state = isValid(text: text).state
         nicknameView.configureStateLabel(state)
     }

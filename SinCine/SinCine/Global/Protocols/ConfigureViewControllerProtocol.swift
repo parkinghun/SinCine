@@ -14,7 +14,7 @@ protocol ConfigureViewControllerProtocol: AnyObject {
 extension ConfigureViewControllerProtocol where Self: UIViewController {
     
     func setupNavigation(title: String) {
-        navigationController?.title = title
+        navigationItem.title = title
         navigationItem.backButtonDisplayMode = .minimal
     }
 }
