@@ -12,13 +12,14 @@ enum UserDefaultsKeys: String {
 }
 
 final class UserDefaultsManager<T: Codable> {
+    
     private let userDefaults = UserDefaults.standard
     private let key: String
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
     
-    init(key: String, encoder: JSONEncoder = .init(), decoder: JSONDecoder = .init()) {
-        self.key = key
+    init(key: UserDefaultsKeys, encoder: JSONEncoder = .init(), decoder: JSONDecoder = .init()) {
+        self.key = key.rawValue
         self.encoder = encoder
         self.decoder = decoder
     }

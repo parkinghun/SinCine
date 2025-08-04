@@ -10,8 +10,8 @@ import Foundation
 struct User: Codable {
     var nickname: String
     var date: Date = .now
-    var like: Int = 0
-    var recentSearch: [String] = []
+    var like: [String] = []  // movie id
+    var recentSearch: [String] = []  // movie id
     
     var formattedDate: String {
         let locale = Locale(identifier: "ko-KR")

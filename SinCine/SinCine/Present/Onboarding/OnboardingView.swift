@@ -63,9 +63,9 @@ final class OnboardingView: BaseView {
         }
         
         startButton.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
+            make.horizontalEdges.equalToSuperview().inset(LayoutLiterals.horizontalPadding)
             make.top.equalTo(descriptionLabel.snp.bottom).offset(40)
-            make.height.equalTo(44)
+            make.height.equalTo(LayoutLiterals.buttonHeight)
         }
     }
     

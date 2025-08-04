@@ -47,7 +47,7 @@ struct Movie: Decodable {
     
     // 장르
     var getGenre: [String] {
-        var genreType: [String]
+        var genreType: [String] = []
         var genreDic = [Int: String]()
         
         genre.forEach {

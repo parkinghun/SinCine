@@ -11,21 +11,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
   
         guard let scene = (scene as? UIWindowScene) else { return }
+        
         window = UIWindow(windowScene: scene)
         
         let launch = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
-        
-        let tabBarController = MainTabBarController()
         
         window?.rootViewController = launch
         window?.makeKeyAndVisible()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.window?.rootViewController = tabBarController
+            self.setRootViewController()
         }
     }
 

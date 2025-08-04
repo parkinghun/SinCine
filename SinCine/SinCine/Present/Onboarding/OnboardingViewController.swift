@@ -7,10 +7,9 @@
 
 import UIKit
 
-final class OnboardingViewController: UIViewController {
+final class OnboardingViewController: UIViewController, ConfigureViewControllerProtocol {
 
     let onboardingView = OnboardingView()
-    let networkManager = NetworkManager.shared
     
     override func loadView() {
         self.view = onboardingView
@@ -20,21 +19,16 @@ final class OnboardingViewController: UIViewController {
         super.viewDidLoad()
         
         configure()
+        setupNavigation(title: "")
     }
 
     private func configure() {
         onboardingView.closure = { [weak self] in
             guard let self else { return }
             
-            networkManager.fetchData<GenreResult>(endPoint: .init(apiType: .genre), data: GenreResult)
-            
             print(#function)
-            let vc = UIViewController()
-            vc.view.backgroundColor = .black
-
-            print(Bundle().apiKey)
-            
-//            self.navigationController?.pushViewController(vc, animated: true)
+            let vc = NicknameSettingViewController()
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
     

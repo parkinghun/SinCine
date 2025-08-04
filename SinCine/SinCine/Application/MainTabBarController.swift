@@ -10,7 +10,6 @@ import UIKit
 final class MainTabBarController: UITabBarController {
     
     convenience init() {
-        
         self.init(nibName: nil, bundle: nil)
         
         configure()
@@ -19,11 +18,11 @@ final class MainTabBarController: UITabBarController {
     func configure() {
         view.backgroundColor = Colors.black
         
-        let onboardingVC = OnboardingViewController()
+        let cinemaVC = CinemaViewController()
         let upcomingVC = UIViewController()
         let settingVC = SettingViewController()
         
-        let cinemaNav = BaseNavigationController(rootViewController: onboardingVC)
+        let cinemaNav = BaseNavigationController(rootViewController: cinemaVC)
         let profileNav = BaseNavigationController(rootViewController: settingVC)
         
         self.setViewControllers([cinemaNav, upcomingVC, profileNav], animated: true)
