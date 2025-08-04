@@ -10,7 +10,7 @@ import UIKit
 final class OnboardingViewController: UIViewController {
 
     let onboardingView = OnboardingView()
-    let userDefaultsManager = UserDefaultsManager<User>(key: "User")
+    let networkManager = NetworkManager.shared
     
     override func loadView() {
         self.view = onboardingView
@@ -26,11 +26,15 @@ final class OnboardingViewController: UIViewController {
         onboardingView.closure = { [weak self] in
             guard let self else { return }
             
+            networkManager.fetchData<GenreResult>(endPoint: .init(apiType: .genre), data: GenreResult)
+            
             print(#function)
             let vc = UIViewController()
             vc.view.backgroundColor = .black
 
-            self.navigationController?.pushViewController(vc, animated: true)
+            print(Bundle().apiKey)
+            
+//            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
     
