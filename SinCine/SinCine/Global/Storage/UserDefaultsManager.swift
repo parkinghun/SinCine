@@ -37,7 +37,7 @@ final class UserDefaultsManager<T: Codable> {
         return loadedData
     }
     
-    func removeObject() {
+    func removeData() {
         userDefaults.removeObject(forKey: key)
     }
 }

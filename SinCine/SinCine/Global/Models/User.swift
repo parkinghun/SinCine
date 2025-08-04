@@ -14,7 +14,6 @@ struct User: Codable {
     var recentSearch: [String] = []  // movie id
     
     var formattedDate: String {
-        let locale = Locale(identifier: "ko-KR")
-        return date.formatted(.dateTime.locale(locale).year(.twoDigits).month().day())
+        return DateFormatter.compactDateFormatter.string(from: date)
     }
 }

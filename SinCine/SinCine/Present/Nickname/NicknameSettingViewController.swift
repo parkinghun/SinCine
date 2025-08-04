@@ -11,7 +11,6 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
     
     weak var delegate: NicknameViewDelegate?
     let nicknameView = NicknameView(isDetaiView: false)
-    let userDefaultsManager = UserDefaultsManager<User>(key: .user)
     
     var valid = false
     var validMessage = StringLiterals.NicknameState.numberOfCharacters.rawValue
@@ -51,7 +50,7 @@ extension NicknameSettingViewController: NicknameViewDelegate {
     func handleCompleteButton() {
         if valid {
             guard let nickname = nicknameView.nicknameTextField.text else { return }
-            userDefaultsManager.save(data: User(nickname: nickname))
+            UserManager.shared.saveUser(User(nickname: nickname))
             
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let sceneDelegate = windowScene.delegate as? SceneDelegate else { return }

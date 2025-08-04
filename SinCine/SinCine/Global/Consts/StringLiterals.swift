@@ -20,8 +20,23 @@ enum StringLiterals {
         case includeNumbers = "닉네임에 숫자는 포함할 수 없어요"
     }
 
+    enum CollectionTitle: String {
+        case recent = "최근 검색어"
+        case today = "오늘의 영화"
+        case description = "Synopsis"
+        case cast = "Cast"
+    }
+    
     enum Empty: String {
         case recent = "최근 검색어 내역이 없습니다."
         case search = "원하는 검색결과를 찾지 못했습니다."
+    }
+    
+    enum NavigationTitle: String {
+        case nickname = "닉네임 설정"
+        case main = "SinCine"
+        case search = "영화 검색"
+        case profile = "설정"
+        case editNickname = "닉네임 편집"
     }
 }

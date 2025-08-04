@@ -11,10 +11,11 @@ class BaseView: UIView, ConfigureViewProtocol {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        configure()
+
         configureHierachy()
         configureLayout()
         configureView()
-        configure()
     }
     
     @available(*, unavailable)

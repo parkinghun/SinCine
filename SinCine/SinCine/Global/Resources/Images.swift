@@ -16,5 +16,5 @@ enum Images {
     static let magnifyingglass = UIImage(systemName: "magnifyingglass")
     static let xmark = UIImage(systemName: "xmark")
     static let calendar = UIImage(systemName: "calendar")
-
+    static let forward = UIImage(systemName: "chevron.forward")
 }

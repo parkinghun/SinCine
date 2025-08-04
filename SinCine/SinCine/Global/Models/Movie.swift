@@ -25,7 +25,7 @@ struct Movie: Decodable {
     let id: Int
     let title: String
     let overview: String
-    let posterPath: String
+    let posterPath: String?
     let genreIds: [Int]
     let releaseDate: String
     // 좋아요 (likeBT)
@@ -42,6 +42,7 @@ struct Movie: Decodable {
     }
     
     var posterURL: String {
+        guard let posterPath else { return "" }
         return  "https://image.tmdb.org/t/p/w500/\(posterPath)"
     }
     
