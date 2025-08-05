@@ -9,7 +9,7 @@ import Foundation
 
 enum APIType {
     case trending
-    case search(query: String)
+    case search(query: String, page: Int)
     case image(movieId: Int)
     case credit(movieId: Int)
     case genre
@@ -31,10 +31,11 @@ enum APIType {
     
     var queryItems: [URLQueryItem]? {
         switch self {
-        case let .search(query):
+        case let .search(query, page):
             return [
+                URLQueryItem(name: "language", value: "ko-KR"),
                 URLQueryItem(name: "query", value: query),
-                URLQueryItem(name: "language", value: "ko-KR")
+                URLQueryItem(name: "page", value: "\(page)")
             ]
         default:
             return [URLQueryItem(name: "language", value: "ko-KR")]

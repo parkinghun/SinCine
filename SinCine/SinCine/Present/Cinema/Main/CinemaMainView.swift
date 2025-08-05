@@ -8,7 +8,13 @@
 import UIKit
 import SnapKit
 
+protocol CinemaMainViewDelegate: AnyObject {
+    func handleRemoveAllButton()
+}
+
 final class CinemaMainView: BaseView {
+    
+    weak var delegate: CinemaMainViewDelegate?
     
     // Title + rightBarButtonItem
     
@@ -30,7 +36,7 @@ final class CinemaMainView: BaseView {
         return label
     }()
     
-    let removeAllButton = {
+    @objc let removeAllButton = {
         let bt = UIButton()
         bt.setTitle("전체 삭제", for: .normal)
         bt.setTitleColor(Colors.green, for: .normal)
@@ -87,6 +93,12 @@ final class CinemaMainView: BaseView {
         recentEmptyLabel.isHidden = !isEmpty
     }
     
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        configureDelegation()
+    }
+    
     override func configureHierachy() {
         self.addSubview(profileView)
         self.addSubview(recentSearchLabel)
@@ -139,6 +151,15 @@ final class CinemaMainView: BaseView {
     override func configureView() {
         profileView.layer.cornerRadius = 12
         profileView.clipsToBounds = true
+    }
+    
+    private func configureDelegation() {
+        removeAllButton.addTarget(self, action: #selector(removeAllButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc private func removeAllButtonTapped() {
+        print(#function)
+        delegate?.handleRemoveAllButton()
     }
 }
 

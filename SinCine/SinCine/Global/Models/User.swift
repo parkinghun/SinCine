@@ -13,6 +13,10 @@ struct User: Codable {
     var like: [Int] = []  // movie id
     var recentSearch: [String] = []  // movie title
     
+    var recentKeyword: [String] {
+        return recentSearch.reversed()
+    }
+    
     var formattedDate: String {
         return DateFormatter.compactDateFormatter.string(from: date)
     }

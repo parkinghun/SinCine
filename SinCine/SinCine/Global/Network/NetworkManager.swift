@@ -35,6 +35,7 @@ final class NetworkManager {
                 case .success(let result):
                     completion(.success(result))
                 case .failure(let error):
+                    print("Fail - ", error)
                     completion(.failure(.invalidURL))
                 }
             }

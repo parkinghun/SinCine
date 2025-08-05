@@ -12,23 +12,25 @@ final class LikeManager {
     
     private let storage = UserDefaultsManager<[Int]>(key: .like)
     
-    private var likeMovieIds: Set<Int> = []
+    private init() { }
     
-    private init() {
-        likeMovieIds = Set(storage.fetch() ?? [])
+    func isLike(movieID: Int) -> Bool {
+        return storage.fetch()?.contains(movieID) ?? false
     }
     
     func toggleLike(for movieID: Int) {
-        if likeMovieIds.contains(movieID) {
-            likeMovieIds.remove(movieID)
-        } else {
-            likeMovieIds.insert(movieID)
-        }
-        storage.save(data: Array(likeMovieIds))
+        var currentLikes = storage.fetch() ?? []
         
+        if currentLikes.contains(movieID) {
+            currentLikes.removeAll { $0 == movieID }
+        } else {
+            currentLikes.append(movieID)
+        }
+        
+        storage.save(data: Array(currentLikes))
     }
     
-    func isLike(movieID: Int) -> Bool {
-        return likeMovieIds.contains(movieID)
+    func getAllLikeMovieIDs() -> [Int] {
+        return storage.fetch() ?? []
     }
 }

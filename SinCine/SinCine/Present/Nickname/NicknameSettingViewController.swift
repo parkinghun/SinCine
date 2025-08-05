@@ -46,6 +46,13 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
         
         setupDelegate()
         setupNavigationItem()
+        setUserNickname()
+    }
+    
+    func setUserNickname() {
+        guard let user = UserManager.shared.currentUser else { return }
+        
+        nicknameView.nicknameTextField.text = user.nickname
     }
     
     func setupNavigationItem() {

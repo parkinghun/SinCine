@@ -8,7 +8,15 @@
 import UIKit
 import SnapKit
 
+protocol RecentSearCellDelegate: AnyObject {
+    func handleKeywordTapped(cell: RecentSearchCollectionViewCell)
+    func handleDeleteButton(cell: RecentSearchCollectionViewCell)
+}
+
 final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewProtocol {
+    
+    
+    weak var delegate: RecentSearCellDelegate?
     
     let keywordLabel = {
         let label = UILabel()
@@ -82,5 +90,20 @@ extension RecentSearchCollectionViewCell: ConfigureViewProtocol {
     
     func configureView() {
         self.backgroundColor = .clear
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(labelClicked))
+        keywordLabel.addGestureRecognizer(tapGesture)
+        
+        deleteButton.addTarget(self, action: #selector(deleteButtonClicked), for: .touchUpInside)
+    }
+    
+    @objc private func labelClicked() {
+        print(#function)
+        delegate?.handleKeywordTapped(cell: self)
+    }
+    
+    @objc private func deleteButtonClicked() {
+        print(#function)
+        delegate?.handleDeleteButton(cell: self)
     }
 }

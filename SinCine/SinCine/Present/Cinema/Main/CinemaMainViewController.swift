@@ -7,22 +7,30 @@
 
 import UIKit
 
+//TODO 하나만 있을 때 안뜸
 final class CinemaMainViewController: UIViewController, ConfigureViewControllerProtocol{
     
     let cinemaMainView = CinemaMainView()
     
-    var recentKeyword: [String] = ["스파이더스파", "스파이더", "스파이더", "스파이더", "스파이더", "스파이더", "스파이더", "스파이더", "스파이더",]
-    
+    var recentKeyword: [String] = [] {
+        didSet {
+            updateRecentSearchView()
+            cinemaMainView.recentSearchCollectionView.reloadData()
+        }
+    }
     var todayMovies: [Movie] = [] {
         didSet {
             cinemaMainView.todayMovieCollectionView.reloadData()
         }
     }
-//    UserManager.shared.currentUser?.recentSearch ?? [] {
-//        didSet {
-//            updateRecentSearchView()
-//        }
-//    }
+    
+    var tempUser: User? {
+        didSet {
+            dump(tempUser)
+            recentKeyword = tempUser?.recentKeyword ?? []
+            // 좋아요도 여기서
+        }
+    }
     
     override func loadView() {
         self.view = cinemaMainView
@@ -35,11 +43,16 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
         
         configureProfile()
         setupDelegate()
-        updateRecentSearchView()
-        getTodyMovie()
+        getTodayMovie()
     }
     
-    func getTodyMovie() {
+    override func viewIsAppearing(_ animated: Bool) {
+        print(#function)
+        tempUser = UserManager.shared.currentUser
+        cinemaMainView.recentSearchCollectionView.reloadData()
+    }
+    
+    func getTodayMovie() {
         NetworkManager.shared.fetchData(endPoint: .init(apiType: .trending), type: MovieResult.self) { [weak self] result in
             guard let self else { return }
             
@@ -53,12 +66,7 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
     }
     
     private func updateRecentSearchView() {
-        guard let currentUSer = UserManager.shared.currentUser else { return }
-  
         cinemaMainView.configureRecentSearch(isEmpty: recentKeyword.isEmpty)
-
-        
-//        cinemaMainView.configureRecentSearch(isEmpty: currentUSer.recentSearch.isEmpty)
     }
     
     private func configureProfile() {
@@ -89,14 +97,13 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
         cinemaMainView.recentSearchCollectionView.register(RecentSearchCollectionViewCell.self, forCellWithReuseIdentifier: RecentSearchCollectionViewCell.identifier)
         
         cinemaMainView.todayMovieCollectionView.register(TodayMovieCollectionViewCell.self, forCellWithReuseIdentifier: TodayMovieCollectionViewCell.identifier)
-
+        
         cinemaMainView.profileView.delegate = self
-        
-        
+        cinemaMainView.delegate = self
     }
     
 }
-    
+
 
 extension CinemaMainViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -104,7 +111,7 @@ extension CinemaMainViewController: UICollectionViewDataSource {
             return recentKeyword.count
             
             
-//            return UserManager.shared.currentUser?.recentSearch.count ?? 0
+            //            return UserManager.shared.currentUser?.recentSearch.count ?? 0
         } else {  // 오늘 영화
             return todayMovies.count
         }
@@ -116,6 +123,7 @@ extension CinemaMainViewController: UICollectionViewDataSource {
             guard let cell = cinemaMainView.recentSearchCollectionView.dequeueReusableCell(withReuseIdentifier: RecentSearchCollectionViewCell.identifier, for: indexPath) as? RecentSearchCollectionViewCell else { return UICollectionViewCell() }
             
             cell.configure(keyword: recentKeyword[indexPath.item])
+            cell.delegate = self
             
             return cell
         } else {
@@ -133,6 +141,7 @@ extension CinemaMainViewController: UICollectionViewDataSource {
     }
 }
 
+//TODO: DetailView..
 extension CinemaMainViewController: UICollectionViewDelegate {
     
 }
@@ -167,6 +176,36 @@ extension CinemaMainViewController: TodayMovieCellDelegate {
             LikeManager.shared.toggleLike(for: movieId)
             
             cinemaMainView.todayMovieCollectionView.reloadData()
+        }
+    }
+}
+
+extension CinemaMainViewController: CinemaMainViewDelegate {
+    func handleRemoveAllButton() {
+        print(#function)
+        var temp = tempUser
+        temp?.recentSearch.removeAll()
+        guard let temp else { return }
+        tempUser = temp
+        UserManager.shared.saveUser(temp)
+    }
+}
+
+extension CinemaMainViewController: RecentSearCellDelegate {
+    func handleKeywordTapped(cell: RecentSearchCollectionViewCell) {
+        if let indexPath = cinemaMainView.recentSearchCollectionView.indexPath(for: cell) {
+            print(#function)
+            print("디테일 뷰 이동")
+        }
+
+    }
+    
+    func handleDeleteButton(cell: RecentSearchCollectionViewCell) {
+        
+        if let indexPath = cinemaMainView.recentSearchCollectionView.indexPath(for: cell) {
+            tempUser?.recentSearch.remove(at: indexPath.item)
+            guard let tempUser else { return }
+            UserManager.shared.saveUser(tempUser)
         }
     }
 }
