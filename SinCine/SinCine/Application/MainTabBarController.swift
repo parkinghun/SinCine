@@ -20,10 +20,10 @@ final class MainTabBarController: UITabBarController {
         
         let cinemaVC = CinemaMainViewController()
         let upcomingVC = UIViewController()
-        let settingVC = SettingViewController()
+        let profileVC = ProfileViewController()
         
         let cinemaNav = BaseNavigationController(rootViewController: cinemaVC)
-        let profileNav = BaseNavigationController(rootViewController: settingVC)
+        let profileNav = BaseNavigationController(rootViewController: profileVC)
         
         self.setViewControllers([cinemaNav, upcomingVC, profileNav], animated: true)
         self.tabBar.unselectedItemTintColor = Colors.lightGray

@@ -15,7 +15,7 @@ struct CastResult: Decodable {
 struct Cast: Decodable {
     let name: String
     let originalName: String
-    let profilePath: String
+    let profilePath: String?
     
     enum CodingKeys: String, CodingKey {
         case name

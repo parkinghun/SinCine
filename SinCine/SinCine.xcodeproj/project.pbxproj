@@ -171,6 +171,7 @@
 				DEVELOPMENT_TEAM = VDAQLM4XLQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SinCine/Application/info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "박성훈";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
@@ -207,6 +208,7 @@
 				DEVELOPMENT_TEAM = VDAQLM4XLQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SinCine/Application/info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "박성훈";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";

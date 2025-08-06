@@ -23,6 +23,12 @@ final class CinemaSearchViewController: UIViewController, ConfigureViewControlle
     private var page = 1
     private var totalPages = 1
     
+    convenience init(query: String) {
+        self.init(nibName: nil, bundle: nil)
+        fetchQuery(query)
+        cinemaSearchView.searchBar.text = query
+    }
+    
     override func loadView() {
         self.view = cinemaSearchView
     }
@@ -32,6 +38,10 @@ final class CinemaSearchViewController: UIViewController, ConfigureViewControlle
         setupNavigation(title: StringLiterals.NavigationTitle.search.rawValue)
         configureTalbeView()
         setupDelegate()
+    }
+    
+    func fetchData() {
+        
     }
     
     private func configureTalbeView() {
@@ -109,14 +119,3 @@ extension CinemaSearchViewController: UISearchBarDelegate {
         UserManager.shared.saveUser(tempUser)
     }
 }
-
-
-/*
- SearchVC 에서 검색
- MainVC의 Recent CollectoinView에 추가
- 
- 
- 
- 관련된 값들을 같이 변경시켜주고 싶음.
- 
- */

@@ -28,7 +28,6 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
         didSet {
             dump(tempUser)
             recentKeyword = tempUser?.recentKeyword ?? []
-            // 좋아요도 여기서
         }
     }
     
@@ -44,6 +43,7 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
         configureProfile()
         setupDelegate()
         getTodayMovie()
+        configureNotification()
     }
     
     override func viewIsAppearing(_ animated: Bool) {
@@ -98,7 +98,6 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
         
         cinemaMainView.todayMovieCollectionView.register(TodayMovieCollectionViewCell.self, forCellWithReuseIdentifier: TodayMovieCollectionViewCell.identifier)
         
-        cinemaMainView.profileView.delegate = self
         cinemaMainView.delegate = self
     }
     
@@ -109,10 +108,7 @@ extension CinemaMainViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == cinemaMainView.recentSearchCollectionView {
             return recentKeyword.count
-            
-            
-            //            return UserManager.shared.currentUser?.recentSearch.count ?? 0
-        } else {  // 오늘 영화
+        } else {
             return todayMovies.count
         }
         
@@ -141,22 +137,42 @@ extension CinemaMainViewController: UICollectionViewDataSource {
     }
 }
 
-//TODO: DetailView..
 extension CinemaMainViewController: UICollectionViewDelegate {
-    
-}
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == cinemaMainView.todayMovieCollectionView {
+            print(#function, indexPath.item)
 
-extension CinemaMainViewController: ProfileViewDelegate {
-    func handleTapGestureAction() {
+            let detailVC = CinemaDetailViewController(movie: todayMovies[indexPath.item])
+            
+            navigationController?.pushViewController(detailVC, animated: true)
+        }
+    }
+    
+    func configureNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleTapGestureAction), name: .profileViewTapped, object: nil)
+    }
+    
+    @objc func handleTapGestureAction() {
         let nicknameSettingVC = NicknameSettingViewController(isDetailView: false, isModal: true)
         
         let nav = BaseNavigationController(rootViewController: nicknameSettingVC)
-        
-        nicknameSettingVC.settingDelegate = self
-        
+                
         present(nav, animated: true)
     }
+    
 }
+
+//extension CinemaMainViewController: ProfileViewDelegate {
+//    func handleTapGestureAction() {
+//        let nicknameSettingVC = NicknameSettingViewController(isDetailView: false, isModal: true)
+//        
+//        let nav = BaseNavigationController(rootViewController: nicknameSettingVC)
+//        
+//        nicknameSettingVC.settingDelegate = self
+//        
+//        present(nav, animated: true)
+//    }
+//}
 
 extension CinemaMainViewController: NicknameSettingVCDelegate {
     func handleUserUpdate() {
@@ -194,15 +210,14 @@ extension CinemaMainViewController: CinemaMainViewDelegate {
 extension CinemaMainViewController: RecentSearCellDelegate {
     func handleKeywordTapped(cell: RecentSearchCollectionViewCell) {
         if let indexPath = cinemaMainView.recentSearchCollectionView.indexPath(for: cell) {
-            print(#function)
-            print("디테일 뷰 이동")
+            let vc = CinemaSearchViewController(query: recentKeyword[indexPath.item])
+            navigationController?.pushViewController(vc, animated: true)
         }
-
     }
     
     func handleDeleteButton(cell: RecentSearchCollectionViewCell) {
-        
         if let indexPath = cinemaMainView.recentSearchCollectionView.indexPath(for: cell) {
+            //TODO: 여기 이상함
             tempUser?.recentSearch.remove(at: indexPath.item)
             guard let tempUser else { return }
             UserManager.shared.saveUser(tempUser)

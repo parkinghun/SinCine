@@ -8,13 +8,8 @@
 import UIKit
 import SnapKit
 
-protocol ProfileViewDelegate: AnyObject {
-    func handleTapGestureAction()
-}
 
 final class ProfileView: BaseView {
-    
-    weak var delegate: ProfileViewDelegate?
     
     let nicknameLabel = {
         let label = UILabel()
@@ -92,6 +87,6 @@ final class ProfileView: BaseView {
     }
     
     @objc func stackViewTapped() {
-        delegate?.handleTapGestureAction()
+        NotificationCenter.default.post(name: .profileViewTapped, object: nil)
     }
 }

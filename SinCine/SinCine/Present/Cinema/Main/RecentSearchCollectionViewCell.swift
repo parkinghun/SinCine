@@ -23,6 +23,7 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
         label.configure(text: "Test", color: Colors.black, font: .medium)
         label.textAlignment = .center
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        label.isUserInteractionEnabled = true
         return label
     }()
     
