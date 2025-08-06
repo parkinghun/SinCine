@@ -9,11 +9,14 @@ import UIKit
 import SnapKit
 
 final class CinemaDetailView: BaseView {
-    let tableView = UITableView()
-    
-    //섹션 1 백드롭(최대 5장, horizontal, paging), footer 날짜, 별점, 장르
-    // 섹션 2 Synopsis
-    // 섹션 3 Cast
+    let tableView = {
+        let tv = UITableView()
+        tv.showsVerticalScrollIndicator = false
+        tv.separatorStyle = .none
+        tv.backgroundColor = .clear
+        return tv
+        
+    }()
     
     
     override func configureHierachy() {

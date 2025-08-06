@@ -9,22 +9,28 @@ import UIKit
 
 final class CinemaDetailViewController: UIViewController, ConfigureViewControllerProtocol {
     
-    let detailView = CinemaDetailView()
-    
     var movie: Movie
-    let sections: [Sections] = [.backdrop, .synopsis, .cast]
     var backdropList: [Backdrop] = [] {
         didSet {
-            detailView.tableView.reloadSections(IndexSet(integer: Sections.backdrop.rawValue), with: .automatic)
+//            detailView.tableView.reloadSections(IndexSet(integer: Sections.backdrop.rawValue), with: .automatic)
         }
     }
     var synopsis = ""
     var casts: [Cast] = []
     
     
+    let detailView = CinemaDetailView()
+    
+    private var isTappedMoreButton = false {
+        didSet {
+            detailView.tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
+        }
+    }
+    
     override func loadView() {
         self.view = detailView
     }
+    
     
     init(movie: Movie) {
         self.movie = movie
@@ -39,9 +45,24 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigation(title: movie.title)
-        setupTableView()
-        fetchData()
+        configureTableView()
+//        fetchData()
     }
+    
+    private func configureTableView() {
+        detailView.tableView.delegate = self
+        detailView.tableView.dataSource = self
+        
+        detailView.tableView.register(BackdropTableViewCell.self, forCellReuseIdentifier: BackdropTableViewCell.identifier)
+        detailView.tableView.register(BackdropFooterView.self, forHeaderFooterViewReuseIdentifier: BackdropFooterView.identifier)
+        
+        detailView.tableView.register(SynopsisTableViewCell.self, forCellReuseIdentifier: SynopsisTableViewCell.identifier)
+        detailView.tableView.register(SynopsisHeaderView.self, forHeaderFooterViewReuseIdentifier: SynopsisHeaderView.identifier)
+        
+        detailView.tableView.register(CastTableViewCell.self, forCellReuseIdentifier: CastTableViewCell.identifier)
+        detailView.tableView.register(CastHeaderView.self, forHeaderFooterViewReuseIdentifier: CastHeaderView.identifier)
+    }
+
     
     func fetchData() {
         NetworkManager.shared.fetchData(endPoint: .init(apiType: .image(movieId: movie.id)), type: BackDropResult.self) { [weak self] result in
@@ -57,79 +78,153 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
         }
     }
     
-    func setupNavigation(title: String) {
-        navigationItem.title = title
-        navigationItem.backButtonDisplayMode = .minimal
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: Images.heart, style: .plain, target: self, action: #selector(hearButtonTapped))
-    }
-    
-    @objc private func hearButtonTapped() {
-        print(#function)
-        
-        
-    }
-    
-    private func setupTableView() {
-        detailView.tableView.delegate = self
-        detailView.tableView.dataSource = self
-        
-        detailView.tableView.register(BackDropCell.self, forCellReuseIdentifier: BackDropCell.identifier)
-        detailView.tableView.register(SynopsisCell.self, forCellReuseIdentifier: SynopsisCell.identifier)
-        detailView.tableView.register(CastCell.self, forCellReuseIdentifier: CastCell.identifier)
-
-//        detailView.tableView.separatorStyle = .none
-    }
-    
 }
 
 extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource {
-    
     func numberOfSections(in tableView: UITableView) -> Int {
         return Sections.allCases.count
     }
     
+    //TODO: 수정하기
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        switch Sections.allCases[section] {
+        case .backdrop: return 1
+        case .synopsis: return 1
+        case .cast: return 10
+        }
     }
     
+    //TODO: TableViewCell 리턴해주기
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch Sections(rawValue: indexPath.section) {
+     
+        let section = Sections.allCases[indexPath.section]
+        
+        switch section {
         case .backdrop:
-            guard let cell = detailView.tableView.dequeueReusableCell(withIdentifier: BackDropCell.identifier, for: indexPath) as? BackDropCell else { return UITableViewCell() }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: BackdropTableViewCell.identifier, for: indexPath) as? BackdropTableViewCell else { return UITableViewCell() }
             
-            cell.configure(for: backdropList)
             return cell
-
         case .synopsis:
-            guard let cell = detailView.tableView.dequeueReusableCell(withIdentifier: SynopsisCell.identifier, for: indexPath) as? SynopsisCell else { return UITableViewCell() }
-                        
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: SynopsisTableViewCell.identifier, for: indexPath) as? SynopsisTableViewCell else { return UITableViewCell() }
+            
+            // 데이터 전송
+            cell.configureSummaryLabel(isTappedMoreBT: isTappedMoreButton)
+            
             return cell
         case .cast:
-            guard let cell = detailView.tableView.dequeueReusableCell(withIdentifier: CastCell.identifier, for: indexPath) as? CastCell else { return UITableViewCell() }
-                        
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: CastTableViewCell.identifier, for: indexPath) as? CastTableViewCell else { return UITableViewCell() }
+            
             return cell
-        default:
-            return UITableViewCell()
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch Sections(rawValue: indexPath.section) {
-        case .backdrop: return 300
-        case .synopsis: return UITableView.automaticDimension
-        case .cast: return 80
-        default: return 0
+        let section = Sections.allCases[indexPath.section]
+        
+        switch section {
+        case .backdrop:
+            return UIScreen.main.bounds.width * 0.8
+        case .synopsis:
+            return UITableView.automaticDimension
+        case .cast:
+            return 50
         }
     }
     
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        switch Sections.allCases[section] {
+        case .backdrop:
+            return nil
+        case .cast:
+            return tableView.dequeueReusableHeaderFooterView(withIdentifier: CastHeaderView.identifier)
+
+        case .synopsis:
+            guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: SynopsisHeaderView.identifier) as? SynopsisHeaderView else {
+                return UITableViewHeaderFooterView()
+            }
+            
+            header.delegate = self
+            return header
+        }
+    }
     
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        switch Sections.allCases[section] {
+        case .backdrop:
+            return tableView.dequeueReusableHeaderFooterView(withIdentifier: BackdropFooterView.identifier)
+        case .cast:
+            return nil
+        case .synopsis:
+            return nil
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        switch Sections.allCases[section] {
+        case .backdrop:
+            return 0
+        case .cast:
+            return 44
+        case .synopsis:
+            return 44
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        switch Sections.allCases[section] {
+        case .backdrop:
+            return 44
+        case .cast:
+            return 0
+        case .synopsis:
+            return 0
+        }
+    }
 }
 
+extension CinemaDetailViewController: SynopsisHeaderViewDelegate {
+    func handleMoreButtonAction() {
+        print(#function)
+        isTappedMoreButton.toggle()
+    }
+}
 
 extension CinemaDetailViewController {
-    enum Sections: Int, CaseIterable {
-        case backdrop  // 푸터(커스텀 뷰)
-        case synopsis  // 헤더(커스텀 뷰)
-        case cast  // 헤더
+    enum Sections: CaseIterable {
+        case backdrop
+        case synopsis
+        case cast
+        
+        //TODO: - 고정된 데이터가 아닌 유동적인 데이터를 넣어줄땐 cellForRowAt에서 줘야함.
+        // View공통 뷰가 아닌 이상 뷰를 보여주는게 맞는듯
+        var rows: UIView.Type {
+            switch self {
+            case .backdrop: BackdropTableViewCell.self
+            case .synopsis: SynopsisTableViewCell.self
+            case .cast: CastTableViewCell.self
+            }
+        }
+        
+        // Header Footer 구분해주는 게 있으면 분기해서 편하게ㅐ 쓸 듯??
+        // supplementary
+        var header: UIView.Type? {
+            switch self {
+            case .backdrop:
+                return nil
+            case .synopsis:
+                return SynopsisHeaderView.self
+            case .cast:
+                return CastHeaderView.self
+            }
+        }
+        
+        var footer: UIView? {
+            switch self {
+            case .backdrop:
+                return BackdropFooterView()
+            default:
+                return nil
+            }
+        }
     }
 }
