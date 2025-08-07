@@ -37,6 +37,8 @@ enum APIType {
                 URLQueryItem(name: "query", value: query),
                 URLQueryItem(name: "page", value: "\(page)")
             ]
+        case let .image(movieId):
+            return []
         default:
             return [URLQueryItem(name: "language", value: "ko-KR")]
             

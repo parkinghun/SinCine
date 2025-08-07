@@ -7,12 +7,19 @@
 
 import UIKit
 
+extension ProfileViewController {
+    enum Rows: String, CaseIterable {
+        case question = "자주 묻는 질문"
+        case inquiries = "1:1 문의"
+        case notice = "알림 설정"
+        case withdrawal = "탈퇴하기"
+    }
+}
+
 final class ProfileViewController: UIViewController, ConfigureViewControllerProtocol {
     
     private let myProfileView = MyProfileView()
-    
-    private let items = ["자주 묻는 질문", "1:1 문의", "알림 설정", "탈퇴하기"]
-
+    private let rows = Rows.allCases
     override func loadView() {
         self.view = myProfileView
     }
@@ -49,13 +56,13 @@ final class ProfileViewController: UIViewController, ConfigureViewControllerProt
 
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count
+        return rows.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: MyProfileView.identifier, for: indexPath)
         
-        cell.textLabel?.text = items[indexPath.row]
+        cell.textLabel?.text = rows[indexPath.row].rawValue
         cell.textLabel?.textColor = .white
         cell.backgroundColor = .black
         cell.selectionStyle = .none
@@ -68,8 +75,19 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == items.count - 1 {
+        if indexPath.row == rows.count - 1 {
             print(#function)
+            
+            showDeleteAlert(title: "탈퇴하기", message: "탈퇴를 하면 데이터가 모두 초기화됩니다. 탈퇴하시겠습니까?") {
+                // 회원 탈퇴
+                UserManager.shared.deleteUSer()
+                
+                // 루트 뷰 변경 -> 신델리겟
+                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                      let sceneDelegate = windowScene.delegate as? SceneDelegate else { return }
+                
+                sceneDelegate.setRootViewController()
+            }
         }
     }
 }

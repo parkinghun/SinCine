@@ -12,12 +12,15 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
     var movie: Movie
     var backdropList: [Backdrop] = [] {
         didSet {
-//            detailView.tableView.reloadSections(IndexSet(integer: Sections.backdrop.rawValue), with: .automatic)
+            //TODO: - 수정 필요
+            detailView.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
         }
     }
-    var synopsis = ""
-    var casts: [Cast] = []
-    
+    var castList: [Cast] = [] {
+        didSet {
+            detailView.tableView.reloadSections(IndexSet(integer: 2), with: .automatic)
+        }
+    }
     
     let detailView = CinemaDetailView()
     
@@ -46,7 +49,22 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
         super.viewDidLoad()
         setupNavigation(title: movie.title)
         configureTableView()
-//        fetchData()
+        fetchImage()
+        fetchCast()
+    }
+    
+    func setupNavigation(title: String) {
+        navigationItem.title = title
+        navigationItem.backButtonDisplayMode = .minimal
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: Images.heart, style: .plain, target: self, action: #selector(likeBarButtonTapped))
+    }
+    
+    @objc private func likeBarButtonTapped() {
+        print(#function, "heart 눌림")
+        print(navigationItem.rightBarButtonItem)
+
+        
     }
     
     private func configureTableView() {
@@ -62,15 +80,29 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
         detailView.tableView.register(CastTableViewCell.self, forCellReuseIdentifier: CastTableViewCell.identifier)
         detailView.tableView.register(CastHeaderView.self, forHeaderFooterViewReuseIdentifier: CastHeaderView.identifier)
     }
-
     
-    func fetchData() {
+    // MARK: - Image API / Credit API
+    func fetchImage() {
         NetworkManager.shared.fetchData(endPoint: .init(apiType: .image(movieId: movie.id)), type: BackDropResult.self) { [weak self] result in
             guard let self else { return }
             
             switch result {
+            case .success(let result): // 0개나옴
+                backdropList = Array(result.backdrops.prefix(5))
+
+            case .failure(let error):
+                print("Failure - ", error)
+            }
+        }
+    }
+    
+    func fetchCast() {
+        NetworkManager.shared.fetchData(endPoint: .init(apiType: .credit(movieId: movie.id)), type: CastResult.self) { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
             case .success(let result):
-                backdropList = result.backdrops
+                castList = result.cast
 
             case .failure(let error):
                 print("Failure - ", error)
@@ -90,7 +122,7 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
         switch Sections.allCases[section] {
         case .backdrop: return 1
         case .synopsis: return 1
-        case .cast: return 10
+        case .cast: return castList.count
         }
     }
     
@@ -103,17 +135,26 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
         case .backdrop:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: BackdropTableViewCell.identifier, for: indexPath) as? BackdropTableViewCell else { return UITableViewCell() }
             
+            cell.getBackdropList(backdropList)
+            cell.selectionStyle = .none
+            
             return cell
         case .synopsis:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: SynopsisTableViewCell.identifier, for: indexPath) as? SynopsisTableViewCell else { return UITableViewCell() }
-            
+
             // 데이터 전송
             cell.configureSummaryLabel(isTappedMoreBT: isTappedMoreButton)
-            
+            cell.configure(overview: movie.overview)
+            cell.selectionStyle = .none
+
             return cell
         case .cast:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: CastTableViewCell.identifier, for: indexPath) as? CastTableViewCell else { return UITableViewCell() }
             
+            let row = castList[indexPath.row]
+            cell.configure(profileURL: row.profileURL, name: row.name, originName: row.originalName)
+            cell.selectionStyle = .none
+
             return cell
         }
     }
@@ -151,7 +192,13 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         switch Sections.allCases[section] {
         case .backdrop:
-            return tableView.dequeueReusableHeaderFooterView(withIdentifier: BackdropFooterView.identifier)
+            guard let footer = tableView.dequeueReusableHeaderFooterView(withIdentifier: BackdropFooterView.identifier) as? BackdropFooterView else { return UIView() }
+            
+            let genre = movie.getGenre.map { $0 }.joined(separator: ", ")
+            
+            footer.configure(date: movie.releaseDate, rate: "\(movie.formattedRate)", genre: genre)
+            
+            return footer
         case .cast:
             return nil
         case .synopsis:

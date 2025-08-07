@@ -39,4 +39,8 @@ enum StringLiterals {
         case profile = "설정"
         case editNickname = "닉네임 편집"
     }
+    
+    enum ImageURL: String {
+        case base = "https://image.tmdb.org/t/p/w500/"
+    }
 }

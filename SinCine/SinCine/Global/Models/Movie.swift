@@ -32,6 +32,7 @@ struct Movie: Decodable {
     let posterPath: String?
     let genreIds: [Int]
     let releaseDate: String
+    let voteAverage: Double
     
     var isLiked: Bool = false
     private let genreDictionary = [
@@ -63,11 +64,13 @@ struct Movie: Decodable {
         case posterPath = "poster_path"
         case genreIds = "genre_ids"
         case releaseDate = "release_date"
+        case voteAverage = "vote_average"
     }
     
     var posterURL: URL? {
         guard let posterPath else { return nil }
-        return URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)")
+        let urlString = StringLiterals.ImageURL.base.rawValue + posterPath
+        return URL(string: urlString)
     }
     
     // 장르
@@ -86,5 +89,9 @@ struct Movie: Decodable {
 
     var formattedDate: String {
         return releaseDate.replacingOccurrences(of: "-", with: ". ")
+    }
+    
+    var formattedRate: Double {
+        return (voteAverage * 10).rounded() / 10
     }
 }

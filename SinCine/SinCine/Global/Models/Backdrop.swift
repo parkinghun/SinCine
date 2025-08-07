@@ -14,7 +14,12 @@ struct BackDropResult: Decodable {
 struct Backdrop: Decodable {
     let filePath: String
     
+    enum CodingKeys: String, CodingKey {
+        case filePath = "file_path"
+    }
+    
     var backdropURL: URL? {
-        return URL(string: "https://image.tmdb.org/t/p/w500/\(filePath)")
+        let urlString = StringLiterals.ImageURL.base.rawValue + filePath
+        return URL(string: urlString)
     }
 }

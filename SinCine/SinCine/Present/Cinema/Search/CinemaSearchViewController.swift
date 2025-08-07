@@ -95,6 +95,12 @@ extension CinemaSearchViewController: UITableViewDataSource {
 }
 
 extension CinemaSearchViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let detailVC = CinemaDetailViewController(movie: movieList[indexPath.row])
+        
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+    
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         print("row index - ", indexPath.row)
         

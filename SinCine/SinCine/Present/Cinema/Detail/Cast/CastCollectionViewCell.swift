@@ -12,7 +12,7 @@ final class CastTableViewCell: UITableViewCell, ReusableViewProtocol {
     
     let wrapperView = UIView()
     
-    let actorImageView = {
+    let profileImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .red
         imageView.contentMode = .scaleAspectFill
@@ -50,19 +50,23 @@ final class CastTableViewCell: UITableViewCell, ReusableViewProtocol {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
-            actorImageView.layer.cornerRadius = self.actorImageView.bounds.width / 2
+            profileImageView.layer.cornerRadius = self.profileImageView.bounds.width / 2
         }
     }
     
+    func configure(profileURL: URL?, name: String, originName: String) {
+        profileImageView.downSampling(url: profileURL)
+        nameLabel.text = name
+        originalNameLabel.text = originName
+    }
 }
 
 extension CastTableViewCell: ConfigureViewProtocol {
     func configureHierachy() {
         contentView.addSubview(wrapperView)
-        wrapperView.addSubview(actorImageView)
+        wrapperView.addSubview(profileImageView)
         wrapperView.addSubview(nameLabel)
         wrapperView.addSubview(originalNameLabel)
     }
@@ -73,13 +77,13 @@ extension CastTableViewCell: ConfigureViewProtocol {
             make.horizontalEdges.equalToSuperview()
         }
         
-        actorImageView.snp.makeConstraints { make in
+        profileImageView.snp.makeConstraints { make in
             make.height.width.equalTo(wrapperView.snp.height)
             make.leading.equalToSuperview()
         }
         
         nameLabel.snp.makeConstraints { make in
-            make.leading.equalTo(actorImageView.snp.trailing).offset(8)
+            make.leading.equalTo(profileImageView.snp.trailing).offset(8)
             make.centerY.equalToSuperview()
         }
         

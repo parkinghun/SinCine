@@ -22,4 +22,10 @@ struct Cast: Decodable {
         case originalName = "original_name"
         case profilePath = "profile_path"
     }
+    
+    var profileURL: URL?{
+        guard let profilePath else { return nil }
+        let urlString = StringLiterals.ImageURL.base.rawValue + profilePath
+        return URL(string: urlString)
+    }
 }

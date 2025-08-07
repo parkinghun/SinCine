@@ -20,7 +20,9 @@ extension UIViewController {
     func showDeleteAlert(title: String, message: String, completion: @escaping () -> Void) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
-        let ok = UIAlertAction(title: "확인", style: .destructive)
+        let ok = UIAlertAction(title: "확인", style: .destructive) { _ in
+            completion()
+        }
         let cancel = UIAlertAction(title: "취소", style: .cancel)
         alert.addAction(ok)
         alert.addAction(cancel)

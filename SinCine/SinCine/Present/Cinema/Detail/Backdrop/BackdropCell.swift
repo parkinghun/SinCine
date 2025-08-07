@@ -33,8 +33,8 @@ final class BackdropCell: UICollectionViewCell, ReusableViewProtocol {
     
     /// BackdropImageView 데이터 적용
     /// - Parameter item: 백드롭 이미지 URL
-    func configure(item: String) {
-        
+    func configure(imageURL: URL?) {
+        backdropImageVIew.downSampling(url: imageURL)
     }
     
 }
@@ -51,6 +51,6 @@ extension BackdropCell: ConfigureViewProtocol {
     }
     
     func configureView() {
-        // TODO: - 셀 백그라운드 색??
+        backgroundColor = .clear
     }
 }

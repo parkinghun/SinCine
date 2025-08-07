@@ -10,6 +10,12 @@ import SnapKit
 
 final class BackdropTableViewCell: UITableViewCell, ReusableViewProtocol {
     
+    private var backdropList: [Backdrop] = [] {
+        didSet {
+            collectionView.reloadData()
+        }
+    }
+    
     let collectionView = {
         let itemWidth = UIScreen.main.bounds.width
         
@@ -22,15 +28,17 @@ final class BackdropTableViewCell: UITableViewCell, ReusableViewProtocol {
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.showsHorizontalScrollIndicator = false
         cv.isPagingEnabled = true
+        cv.backgroundColor = .clear
+        
         return cv
     }()
     
-    let pageControl = {
+    lazy var pageControl = {
         let pageControl = UIPageControl()
         pageControl.currentPage = 0
-        pageControl.numberOfPages = 5
+        pageControl.numberOfPages = backdropList.count
         
-        pageControl.backgroundStyle = .prominent  // 백그라운드뷰
+        pageControl.backgroundStyle = .prominent
         pageControl.pageIndicatorTintColor = .lightGray
         pageControl.currentPageIndicatorTintColor = .white
 
@@ -48,6 +56,11 @@ final class BackdropTableViewCell: UITableViewCell, ReusableViewProtocol {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    func getBackdropList(_ list: [Backdrop]) {
+        self.backdropList = list
+        pageControl.numberOfPages = list.count
+    }
 }
 
 extension BackdropTableViewCell: ConfigureViewProtocol {
@@ -63,11 +76,12 @@ extension BackdropTableViewCell: ConfigureViewProtocol {
         
         pageControl.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(collectionView.snp.bottom).offset(-12)
+            make.bottom.equalTo(contentView.snp.bottom).offset(-12)
         }
     }
     
     func configureView() {
+        backgroundColor = .clear
         collectionView.register(BackdropCell.self, forCellWithReuseIdentifier: BackdropCell.identifier)
         
         collectionView.dataSource = self
@@ -83,13 +97,11 @@ extension BackdropTableViewCell: ConfigureViewProtocol {
         let indexPath = IndexPath(item: selectPage, section: 0)
         collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     }
-    
-    
 }
 
 extension BackdropTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return backdropList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -97,6 +109,8 @@ extension BackdropTableViewCell: UICollectionViewDelegate, UICollectionViewDataS
             return UICollectionViewCell()
         }
         
+        let item = backdropList[indexPath.item]
+        cell.configure(imageURL: item.backdropURL)
         return cell
     }
     

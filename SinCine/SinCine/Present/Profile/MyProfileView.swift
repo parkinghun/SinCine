@@ -11,7 +11,7 @@ import SnapKit
 final class MyProfileView: BaseView, ReusableViewProtocol {
     
     let profileView = ProfileView()
-    let tableView = UITableView(frame: .zero, style: .grouped)
+    let tableView = UITableView(frame: .zero, style: .plain)
     
     override func configureHierachy() {
         addSubview(profileView)
@@ -26,13 +26,16 @@ final class MyProfileView: BaseView, ReusableViewProtocol {
         }
         
         tableView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(12)
             make.top.equalTo(profileView.snp.bottom).offset(12)
+            make.horizontalEdges.equalTo(profileView)
             make.bottom.equalTo(safeAreaLayoutGuide)
         }
     }
     
     override func configureView() {
+        profileView.layer.cornerRadius = 12
+        profileView.clipsToBounds = true
+        
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .singleLine
         tableView.separatorColor = Colors.lightGray

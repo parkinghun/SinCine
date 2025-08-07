@@ -16,8 +16,6 @@ final class CinemaMainView: BaseView {
     
     weak var delegate: CinemaMainViewDelegate?
     
-    // Title + rightBarButtonItem
-    
     // 프로필 뷰
     let profileView = ProfileView()
     

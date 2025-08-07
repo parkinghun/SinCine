@@ -36,6 +36,12 @@ final class BackdropFooterView: UITableViewHeaderFooterView, ConfigureViewProtoc
         fatalError("init(coder:) has not been implemented")
     }
     
+    func configure(date: String, rate: String, genre: String) {
+        dateView.label.text = date
+        rateView.label.text = rate
+        genreView.label.text = genre
+    }
+    
     func configureHierachy() {
         self.addSubview(stackView)
     }
