@@ -17,13 +17,6 @@ final class CinemaSearchView: BaseView {
         searchBar.becomeFirstResponder()
         searchBar.searchTextField.leftView?.tintColor = Colors.white
         searchBar.searchTextField.textColor = Colors.white
-        
-//        if let textfield = searchBar.value(forKey: "searchField") as? UITextField {
-//            textfield.textColor = Colors.white
-//            textfield.tintColor = Colors.white
-//        }
-        
-        
         return searchBar
     }()
     
@@ -31,6 +24,7 @@ final class CinemaSearchView: BaseView {
         let label = UILabel()
         label.configure(text: StringLiterals.Empty.search.rawValue, color: Colors.lightGray, font: .regular)
         label.textAlignment = .center
+        label.isHidden = true
         return label
     }()
     
@@ -39,6 +33,10 @@ final class CinemaSearchView: BaseView {
     func updateUI(isEmpty: Bool) {
         searchResultEmptyLabel.isHidden = !isEmpty
         tableView.isHidden = isEmpty
+    }
+    
+    func dismissSearchBarKeyboard() {
+        searchBar.resignFirstResponder()
     }
     
     override func configureHierachy() {

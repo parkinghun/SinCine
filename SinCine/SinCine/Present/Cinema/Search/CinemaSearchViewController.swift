@@ -21,6 +21,7 @@ final class CinemaSearchViewController: UIViewController, ConfigureViewControlle
     private var page = 1
     private var totalPages = 1
     
+    // 최근 검색어로 진입 시 사용
     convenience init(query: String) {
         self.init(nibName: nil, bundle: nil)
         fetchQuery(query)
@@ -62,6 +63,9 @@ final class CinemaSearchViewController: UIViewController, ConfigureViewControlle
                 print("Failure - ", error)
             }
         }
+        
+        RecentSearchManager.shared.addRecentSearch(keyword: query)
+        cinemaSearchView.dismissSearchBarKeyboard()
     }
     
     private func resetParams() {
@@ -117,15 +121,19 @@ extension CinemaSearchViewController: UITableViewDelegate {
             fetchQuery(searchKeyword, page: page)
         }
     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        view.endEditing(true)
+    }
 }
 
 extension CinemaSearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let query = searchBar.text else { return }
-        searchBar.resignFirstResponder()
+        view.endEditing(true)
+        
+        guard let query = searchBar.text,
+            searchKeyword != query else { return }
         resetParams()
         fetchQuery(query)
-
-        RecentSearchManager.shared.addRecentSearch(keyword: query)
     }
 }
