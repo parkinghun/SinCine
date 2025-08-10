@@ -16,7 +16,7 @@ final class MyProfileView: BaseView, ReusableViewProtocol {
     override func configureHierachy() {
         addSubview(profileView)
         addSubview(tableView)
-    }
+    } 
     
     override func configureLayout() {
         profileView.snp.makeConstraints { make in

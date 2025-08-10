@@ -96,6 +96,7 @@ extension CinemaSearchViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CinemaSearchTalbeViewCell.identifier) as? CinemaSearchTalbeViewCell else { return UITableViewCell() }
         
+        cell.selectionStyle = .none
         cell.configureUI(row: movieList[indexPath.row])
         return cell
     }
@@ -126,10 +127,5 @@ extension CinemaSearchViewController: UISearchBarDelegate {
         fetchQuery(query)
 
         RecentSearchManager.shared.addRecentSearch(keyword: query)
-//        
-//        var tempUser = UserManager.shared.currentUser
-//        tempUser?.recentSearch.append(query)
-//        guard let tempUser else { return }
-//        UserManager.shared.saveUser(tempUser)
     }
 }

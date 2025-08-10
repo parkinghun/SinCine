@@ -27,7 +27,6 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
     init(isDetailView: Bool, isModal: Bool) {
         self.isDetailView = isDetailView
         self.isModal = isModal
-        
         self.nicknameView = .init(isDetaiView: isDetailView, isModal: isModal)
         
         super.init(nibName: nil, bundle: nil)
@@ -57,7 +56,6 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
     
     func setupNavigationItem() {
         if isModal {
-            // X title 저장
             navigationItem.title = StringLiterals.NavigationTitle.editNickname.rawValue
             
             let leftBarButtonItem = UIBarButtonItem(image: Images.xmark, style: .plain, target: self, action: #selector(leftBarButtonTapped))
@@ -71,7 +69,6 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
         } else {
             setupNavigation(title: "닉네임 설정")
         }
-
     }
     
     @objc private func leftBarButtonTapped() {
@@ -81,12 +78,14 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
     @objc private func saveButtonTapped() {
         if valid {
             guard let nickname = nicknameView.nicknameTextField.text else { return }
-            UserManager.shared.saveUser(User(nickname: nickname))
             
+            showToastMessage(status: .check, message: "닉네임이 설정되었습니다!")
+            UserManager.shared.saveUser(User(nickname: nickname))
             settingDelegate?.handleUserUpdate()
+            
             dismiss(animated: true)
         } else {
-            showAlert(title: "닉네임 설정 불가능", message: validMessage)
+            showToastMessage(status: .warning, message: validMessage)
         }
     }
     
@@ -99,7 +98,6 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
         nicknameView.delegate = self
     }
 }
-
 
 extension NicknameSettingViewController: NicknameViewDelegate {
     
@@ -115,6 +113,7 @@ extension NicknameSettingViewController: NicknameViewDelegate {
     func handleCompleteButton() {
         if valid {
             guard let nickname = nicknameView.nicknameTextField.text else { return }
+            showToastMessage(status: .check, message: "닉네임이 설정되었습니다!")
             UserManager.shared.saveUser(User(nickname: nickname))
             
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -124,7 +123,7 @@ extension NicknameSettingViewController: NicknameViewDelegate {
             print(#function)
             print(nickname)
         } else {
-            showAlert(title: "닉네임 설정 불가능", message: validMessage)
+            showToastMessage(status: .warning, message: validMessage)
         }
     }
 }

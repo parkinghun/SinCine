@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 extension UIViewController {
     func showAlert(title: String, message: String) {
@@ -28,5 +29,25 @@ extension UIViewController {
         alert.addAction(cancel)
         
         present(alert, animated: true)
+    }
+    
+    func showToastMessage(status: ToastStatus, message: String) {
+        let toastView = ToastMessageView()
+        toastView.configure(message: message, status: status)
+
+        self.view.addSubview(toastView)
+        
+        toastView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-100)
+            make.horizontalEdges.equalToSuperview().inset(40)
+            make.height.equalTo(44)
+        }
+        
+        UIView.animate(withDuration: 5.0) {
+            toastView.alpha = 0.0
+        } completion: { _ in
+            toastView.removeFromSuperview()
+        }
     }
 }

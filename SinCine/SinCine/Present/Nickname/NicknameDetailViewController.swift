@@ -33,7 +33,6 @@ final class NicknameDetailViewController: UIViewController, ConfigureViewControl
         settingVC.configureTextField(text: nickname)
         settingVC.valid = isValid(text: nickname).valid
         settingVC.validMessage = isValid(text: nickname).state
-        
     }
     
     private func setupNavigationItem() {
@@ -43,11 +42,9 @@ final class NicknameDetailViewController: UIViewController, ConfigureViewControl
         setupNavigation(title: title)
     }
     
-    
     func configureTextField(text: String) {
         nicknameView.configureTextField(text: text)
     }
-    
     
     private func setupDelegate() {
         nicknameView.nicknameTextField.delegate = self
@@ -63,16 +60,13 @@ extension NicknameDetailViewController: UITextFieldDelegate {
         nicknameView.configureStateLabel(state)
     }
     
-    // 마지막 글자를 기준으로 상태를 나타내고 싶음
     func isValid(text: String) -> (valid: Bool, state: String) {
-        // 특수문자 - "[@#$%]"
         let specialCharacters = "[@#$%]"
         if text.range(of: specialCharacters, options: .regularExpression) != nil {
             nicknameView.configureStateLabel(StringLiterals.NicknameState.specialCharacters.rawValue)
             return (false, StringLiterals.NicknameState.specialCharacters.rawValue)
         }
         
-        // 숫자 포함여부
         let numbers = "[0-9]"
         if text.range(of: numbers, options: .regularExpression) != nil {
             nicknameView.configureStateLabel(StringLiterals.NicknameState.includeNumbers.rawValue)
