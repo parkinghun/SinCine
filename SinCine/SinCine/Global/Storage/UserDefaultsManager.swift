@@ -10,6 +10,7 @@ import Foundation
 enum UserDefaultsKeys: String {
     case user
     case like
+    case recentSearch
 }
 
 final class UserDefaultsManager<T: Codable> {

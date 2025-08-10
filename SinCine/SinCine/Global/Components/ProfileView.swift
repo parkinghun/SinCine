@@ -53,10 +53,19 @@ final class ProfileView: BaseView {
         return bt
     }()
     
-    func configureUI(data: User) {
+    func configureUI(data: User, like: [Int]) {
         nicknameLabel.text = data.nickname
         dateButton.setConfigureTitle("\(data.formattedDate) 가입")
-        movieBox.setTitle("\(data.like.count)개의 무비박스 보관중", for: .normal)
+        movieBox.setTitle("\(like.count)개의 무비박스 보관중", for: .normal)
+    }
+    
+    func configureUserInfo(nickname: String, date: String) {
+        nicknameLabel.text = nickname
+        dateButton.setTitle(date, for: .normal)
+    }
+    
+    func configureLikeLabel(likeTitle: String) {
+        movieBox.setTitle(likeTitle, for: .normal)
     }
     
     override func configureHierachy() {

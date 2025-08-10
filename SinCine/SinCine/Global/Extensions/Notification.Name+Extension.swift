@@ -9,4 +9,5 @@ import Foundation
 
 extension Notification.Name {
     static let profileViewTapped = Notification.Name("profileViewTapped")
+    static let searchLikeTapped = Notification.Name("searchLikeTapped")
 }

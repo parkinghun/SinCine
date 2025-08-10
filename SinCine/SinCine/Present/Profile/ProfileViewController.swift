@@ -29,6 +29,7 @@ final class ProfileViewController: UIViewController, ConfigureViewControllerProt
         setupNavigation(title: "설정")
         configureProfile()
         configureTableView()
+        configureDelegation()
     }
     
     private func configureTableView() {
@@ -38,7 +39,7 @@ final class ProfileViewController: UIViewController, ConfigureViewControllerProt
     
     private func configureProfile() {
         guard let user = UserManager.shared.currentUser else { return }
-        myProfileView.profileView.configureUI(data: user)
+        myProfileView.profileView.configureUI(data: user, like: LikeManager.shared.likeList)
     }
     
     func configureNotification() {
@@ -51,6 +52,10 @@ final class ProfileViewController: UIViewController, ConfigureViewControllerProt
         let nav = BaseNavigationController(rootViewController: nicknameSettingVC)
                 
         present(nav, animated: true)
+    }
+    
+    private func configureDelegation() {
+        UserManager.shared.delegate = self
     }
 }
 
@@ -89,5 +94,12 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
                 sceneDelegate.setRootViewController()
             }
         }
+    }
+}
+
+extension ProfileViewController: UserManagerDelegate {
+    func updateUserUI() {
+        guard let user = UserManager.shared.currentUser else { return }
+        myProfileView.profileView.configureUserInfo(nickname: user.nickname, date: user.formattedDate)
     }
 }

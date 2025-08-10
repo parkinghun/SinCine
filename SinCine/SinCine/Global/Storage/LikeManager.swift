@@ -7,12 +7,24 @@
 
 import Foundation
 
+protocol LikeManagerDelegate: AnyObject {
+    func updateLikeUI()
+}
+
 final class LikeManager {
     static let shared = LikeManager()
-    
     private let storage = UserDefaultsManager<[Int]>(key: .like)
     
-    private init() { }
+    weak var delegate: LikeManagerDelegate?
+    private(set) var likeList: [Int] = [] {
+        didSet {
+            delegate?.updateLikeUI() 
+        }
+    }
+    
+    private init() {
+        self.likeList = getAllLikeMovieIDs
+    }
     
     func isLike(movieID: Int) -> Bool {
         return storage.fetch()?.contains(movieID) ?? false
@@ -22,15 +34,22 @@ final class LikeManager {
         var currentLikes = storage.fetch() ?? []
         
         if currentLikes.contains(movieID) {
+            print("Like 삭제")
             currentLikes.removeAll { $0 == movieID }
         } else {
+            print("Like 추가")
             currentLikes.append(movieID)
         }
         
+        likeList = currentLikes
         storage.save(data: Array(currentLikes))
     }
     
-    func getAllLikeMovieIDs() -> [Int] {
+    var getAllLikeMovieIDs: [Int] {
         return storage.fetch() ?? []
+    }
+    
+    func removeAll() {
+        storage.removeData()
     }
 }

@@ -7,8 +7,6 @@
 
 import UIKit
 
-//
-
 final class CinemaSearchViewController: UIViewController, ConfigureViewControllerProtocol {
     
     private let cinemaSearchView = CinemaSearchView()
@@ -38,18 +36,14 @@ final class CinemaSearchViewController: UIViewController, ConfigureViewControlle
         setupNavigation(title: StringLiterals.NavigationTitle.search.rawValue)
         configureTalbeView()
         setupDelegate()
+        configureNotification()
     }
-    
-    func fetchData() {
-        
-    }
-    
+
     private func configureTalbeView() {
         cinemaSearchView.tableView.delegate = self
         cinemaSearchView.tableView.dataSource = self
         
         cinemaSearchView.tableView.register(CinemaSearchTalbeViewCell.self, forCellReuseIdentifier: CinemaSearchTalbeViewCell.identifier)
-        
         cinemaSearchView.tableView.rowHeight = 130
     }
     
@@ -76,6 +70,22 @@ final class CinemaSearchViewController: UIViewController, ConfigureViewControlle
         page = 1
         totalPages = 1
     }
+    
+    private func configureNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleLikeButtonAction(_:)), name: .searchLikeTapped, object: nil)
+    }
+    
+    @objc func handleLikeButtonAction(_ sender: Notification) {
+        guard let searchTableViewcell = sender.object as? CinemaSearchTalbeViewCell,
+              let indexPath = cinemaSearchView.tableView.indexPath(for: searchTableViewcell) else { return }
+        
+        updateLike(indexPath: indexPath)
+    }
+    
+    private func updateLike(indexPath: IndexPath) {
+        movieList[indexPath.row].isLike.toggle()
+        LikeManager.shared.toggleLike(for: movieList[indexPath.row].id)
+    }
 }
 
 extension CinemaSearchViewController: UITableViewDataSource {
@@ -84,14 +94,11 @@ extension CinemaSearchViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = cinemaSearchView.tableView.dequeueReusableCell(withIdentifier: CinemaSearchTalbeViewCell.identifier) as? CinemaSearchTalbeViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: CinemaSearchTalbeViewCell.identifier) as? CinemaSearchTalbeViewCell else { return UITableViewCell() }
         
-        cell.configureUI(data: movieList[indexPath.row])
-        
+        cell.configureUI(row: movieList[indexPath.row])
         return cell
     }
-    
-    
 }
 
 extension CinemaSearchViewController: UITableViewDelegate {
@@ -108,7 +115,6 @@ extension CinemaSearchViewController: UITableViewDelegate {
             page += 1
             fetchQuery(searchKeyword, page: page)
         }
-        
     }
 }
 
@@ -119,9 +125,11 @@ extension CinemaSearchViewController: UISearchBarDelegate {
         resetParams()
         fetchQuery(query)
 
-        var tempUser = UserManager.shared.currentUser
-        tempUser?.recentSearch.append(query)
-        guard let tempUser else { return }
-        UserManager.shared.saveUser(tempUser)
+        RecentSearchManager.shared.addRecentSearch(keyword: query)
+//        
+//        var tempUser = UserManager.shared.currentUser
+//        tempUser?.recentSearch.append(query)
+//        guard let tempUser else { return }
+//        UserManager.shared.saveUser(tempUser)
     }
 }

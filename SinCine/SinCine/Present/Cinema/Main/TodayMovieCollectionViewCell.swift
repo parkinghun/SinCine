@@ -64,12 +64,15 @@ final class TodayMovieCollectionViewCell: UICollectionViewCell, ReusableViewProt
         posterImageView.downSampling(url: data.posterURL)
         titleLabel.text = data.title
         overviewLabel.text = data.overview
-    }
-    
-    func updateHeart(isLike: Bool) {
-        let image = isLike ? Images.heartFill : Images.heart
+        
+        let image = data.isLike ? Images.heartFill : Images.heart
         likeButton.setImage(image, for: .normal)
     }
+    
+//    func updateHeart(isLike: Bool) {
+//        let image = isLike ? Images.heartFill : Images.heart
+//        likeButton.setImage(image, for: .normal)
+//    }
     
     private func configureAction() {
         likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)

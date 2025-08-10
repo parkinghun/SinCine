@@ -12,7 +12,7 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
     var movie: Movie
     var backdropList: [Backdrop] = [] {
         didSet {
-            //TODO: - 수정 필요
+            //TODO: - 수정 필요(하드코딩 뺴기)
             detailView.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
         }
     }
@@ -30,6 +30,10 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
         }
     }
     
+    var heartImage: UIImage? {
+        return movie.isLike ? Images.heartFill : Images.heart
+    }
+    
     override func loadView() {
         self.view = detailView
     }
@@ -37,7 +41,7 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
     
     init(movie: Movie) {
         self.movie = movie
-
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -53,18 +57,21 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
         fetchCast()
     }
     
+    lazy var heartBarButtonItem = UIBarButtonItem(image: heartImage, style: .plain, target: self, action: #selector(likeBarButtonTapped))
+    
     func setupNavigation(title: String) {
         navigationItem.title = title
         navigationItem.backButtonDisplayMode = .minimal
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: Images.heart, style: .plain, target: self, action: #selector(likeBarButtonTapped))
+        navigationItem.rightBarButtonItem = heartBarButtonItem
     }
     
     @objc private func likeBarButtonTapped() {
         print(#function, "heart 눌림")
-        print(navigationItem.rightBarButtonItem)
-
         
+        movie.isLike.toggle()
+        LikeManager.shared.toggleLike(for: movie.id)
+        heartBarButtonItem.image = heartImage
     }
     
     private func configureTableView() {
@@ -89,7 +96,7 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
             switch result {
             case .success(let result): // 0개나옴
                 backdropList = Array(result.backdrops.prefix(5))
-
+                
             case .failure(let error):
                 print("Failure - ", error)
             }
@@ -103,7 +110,7 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
             switch result {
             case .success(let result):
                 castList = result.cast
-
+                
             case .failure(let error):
                 print("Failure - ", error)
             }
@@ -128,7 +135,7 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
     
     //TODO: TableViewCell 리턴해주기
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-     
+        
         let section = Sections.allCases[indexPath.section]
         
         switch section {
@@ -141,12 +148,12 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
             return cell
         case .synopsis:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: SynopsisTableViewCell.identifier, for: indexPath) as? SynopsisTableViewCell else { return UITableViewCell() }
-
+            
             // 데이터 전송
             cell.configureSummaryLabel(isTappedMoreBT: isTappedMoreButton)
             cell.configure(overview: movie.overview)
             cell.selectionStyle = .none
-
+            
             return cell
         case .cast:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: CastTableViewCell.identifier, for: indexPath) as? CastTableViewCell else { return UITableViewCell() }
@@ -154,7 +161,7 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
             let row = castList[indexPath.row]
             cell.configure(profileURL: row.profileURL, name: row.name, originName: row.originalName)
             cell.selectionStyle = .none
-
+            
             return cell
         }
     }
@@ -178,7 +185,7 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
             return nil
         case .cast:
             return tableView.dequeueReusableHeaderFooterView(withIdentifier: CastHeaderView.identifier)
-
+            
         case .synopsis:
             guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: SynopsisHeaderView.identifier) as? SynopsisHeaderView else {
                 return UITableViewHeaderFooterView()
@@ -252,6 +259,8 @@ extension CinemaDetailViewController {
             }
         }
         
+        
+        //TODO: 디벨롭 -> 실제로 타입캐스팅해서 써보기
         // Header Footer 구분해주는 게 있으면 분기해서 편하게ㅐ 쓸 듯??
         // supplementary
         var header: UIView.Type? {

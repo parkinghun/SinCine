@@ -57,6 +57,7 @@ final class CinemaSearchTalbeViewCell: UITableViewCell, ReusableViewProtocol {
         configureHierachy()
         configureLayout()
         configureView()
+        configureBTAction()
     }
     
     required init?(coder: NSCoder) {
@@ -69,18 +70,47 @@ final class CinemaSearchTalbeViewCell: UITableViewCell, ReusableViewProtocol {
         genreStackView.removeAllArrangedSubviews()
     }
     
-    func configureUI(data: Movie) {
-        posterImageView.downSampling(url: data.posterURL)
-        titleLabel.text = data.title
-        dateLabel.text = data.formattedDate
+    func configureUI(row movie: Movie) {
+        posterImageView.downSampling(url: movie.posterURL)
+        titleLabel.text = movie.title
+        dateLabel.text = movie.formattedDate
         
-        let genre = data.getGenre.prefix(3)
+        let genre = movie.getGenre.prefix(3)
         
         genre.forEach {
             let genreView = GenreView(title: $0)
             genreStackView.addArrangedSubview(genreView)
         }
+        
+        let likeImage = movie.isLike ? Images.heartFill : Images.heart
+        likeButton.setImage(likeImage, for: .normal)
     }
+    
+    func configureBTAction() {
+        likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
+    }
+    
+    /*
+     1. 버튼 클릭 -> UpdateUI
+     2. 클로저 ->
+     3.
+     
+     셀의 addTarget 등.. 처리는 어디서 하는지
+     
+     */
+    @objc private func likeButtonTapped() {
+        print(#function)
+        NotificationCenter.default.post(name: .searchLikeTapped, object: self)
+//        NotificationCenter.default.post(name: .profileViewTapped, object: nil)
+    }
+    
+    // 무비는 어디서 가져와?
+    func configureLikeImage(row movie: Movie) {
+        let likeImage = movie.isLike ? Images.heartFill : Images.heart
+        likeButton.setImage(likeImage, for: .normal)
+    }
+    
+    
 }
 
 extension CinemaSearchTalbeViewCell: ConfigureViewProtocol {

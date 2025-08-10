@@ -15,15 +15,20 @@ protocol CinemaMainViewDelegate: AnyObject {
 final class CinemaMainView: BaseView {
     
     weak var delegate: CinemaMainViewDelegate?
-    
-    // 프로필 뷰
+
     let profileView = ProfileView()
-    
-    // 최근 검색어
     let recentSearchLabel = {
         let label = UILabel()
         label.configure(text: StringLiterals.CollectionTitle.recent.rawValue, font: .semiBold)
         return label
+    }()
+    
+    let removeAllButton = {
+        let bt = UIButton()
+        bt.setTitle("전체 삭제", for: .normal)
+        bt.setTitleColor(Colors.green, for: .normal)
+        bt.titleLabel?.font = .medium
+        return bt
     }()
     
     let recentEmptyLabel = {
@@ -34,20 +39,11 @@ final class CinemaMainView: BaseView {
         return label
     }()
     
-    @objc let removeAllButton = {
-        let bt = UIButton()
-        bt.setTitle("전체 삭제", for: .normal)
-        bt.setTitleColor(Colors.green, for: .normal)
-        bt.titleLabel?.font = .medium
-        return bt
-    }()
-    
     let recentSearchCollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 6
-        
-        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        layout.estimatedItemSize = CGSize(width: 100, height: 35)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.showsHorizontalScrollIndicator = false
@@ -55,7 +51,6 @@ final class CinemaMainView: BaseView {
         return collectionView
     }()
     
-    // 오늘의 영화
     let todayMovieLabel = {
         let label = UILabel()
         label.configure(text: StringLiterals.CollectionTitle.today.rawValue, font: .semiBold)
@@ -70,9 +65,7 @@ final class CinemaMainView: BaseView {
         
         let cellWidth = width - (padding * 2) - (padding * 1)
         let itemWidth = cellWidth / itemCount
-        
         let itemHeight = height - 300
-        
         
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -86,15 +79,16 @@ final class CinemaMainView: BaseView {
         return collectionView
     }()
     
-    func configureRecentSearch(isEmpty: Bool) {
-        removeAllButton.isHidden = isEmpty
-        recentEmptyLabel.isHidden = !isEmpty
-    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        configureDelegation()
+//        configureDelegation()
+    }
+    
+    func configureRecentSearch(isEmpty: Bool) {
+        removeAllButton.isHidden = isEmpty
+        recentEmptyLabel.isHidden = !isEmpty
     }
     
     override func configureHierachy() {
@@ -138,20 +132,16 @@ final class CinemaMainView: BaseView {
             make.top.equalTo(recentSearchCollectionView.snp.bottom).offset(LayoutLiterals.horizontalPadding)
             make.leading.equalToSuperview().inset(LayoutLiterals.horizontalPadding)
         }
-        
+
         todayMovieCollectionView.snp.makeConstraints { make in
             make.top.equalTo(todayMovieLabel.snp.bottom).offset(8)
             make.horizontalEdges.bottom.equalTo(self.safeAreaLayoutGuide)
         }
-        
     }
     
     override func configureView() {
         profileView.layer.cornerRadius = 12
         profileView.clipsToBounds = true
-    }
-    
-    private func configureDelegation() {
         removeAllButton.addTarget(self, action: #selector(removeAllButtonTapped), for: .touchUpInside)
     }
     

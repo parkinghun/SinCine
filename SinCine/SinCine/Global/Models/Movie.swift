@@ -29,12 +29,13 @@ struct Movie: Decodable {
     let id: Int
     let title: String
     let overview: String
-    let posterPath: String?
+    let posterPath: String
     let genreIds: [Int]
     let releaseDate: String
     let voteAverage: Double
     
-    var isLiked: Bool = false
+    var isLike: Bool
+    
     private let genreDictionary = [
         28: "액션",
         12: "모험",
@@ -67,8 +68,19 @@ struct Movie: Decodable {
         case voteAverage = "vote_average"
     }
     
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(Int.self, forKey: .id)
+        self.title = try container.decode(String.self, forKey: .title)
+        self.overview = try container.decode(String.self, forKey: .overview)
+        self.posterPath = try container.decodeIfPresent(String.self, forKey: .posterPath) ?? ""
+        self.genreIds = try container.decodeIfPresent([Int].self, forKey: .genreIds) ?? []
+        self.releaseDate = try container.decode(String.self, forKey: .releaseDate)
+        self.voteAverage = try container.decode(Double.self, forKey: .voteAverage)
+        self.isLike = LikeManager.shared.isLike(movieID: id)  // 위치 고려
+    }
+    
     var posterURL: URL? {
-        guard let posterPath else { return nil }
         let urlString = StringLiterals.ImageURL.base.rawValue + posterPath
         return URL(string: urlString)
     }

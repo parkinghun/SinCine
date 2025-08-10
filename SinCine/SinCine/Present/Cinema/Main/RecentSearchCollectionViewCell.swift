@@ -15,7 +15,6 @@ protocol RecentSearCellDelegate: AnyObject {
 
 final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewProtocol {
     
-    
     weak var delegate: RecentSearCellDelegate?
     
     let keywordLabel = {
@@ -41,8 +40,8 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
         sv.spacing = 4
         sv.alignment = .center
         sv.distribution = .fill
+
         sv.backgroundColor = Colors.white
-        
         sv.isLayoutMarginsRelativeArrangement = true
         sv.layoutMargins = UIEdgeInsets(top: 5, left: 8, bottom: 8, right: 5)
         return sv
@@ -50,7 +49,6 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
         configureHierachy()
         configureLayout()
         configureView()
@@ -63,7 +61,6 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
             guard let self else { return }
             self.cellStackView.layer.cornerRadius = self.cellStackView.bounds.height / 2
             self.cellStackView.clipsToBounds = true
-
         }
     }
     
@@ -74,8 +71,6 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
     func configure(keyword: String) {
         keywordLabel.text = keyword
     }
-    
-    
 }
 
 extension RecentSearchCollectionViewCell: ConfigureViewProtocol {

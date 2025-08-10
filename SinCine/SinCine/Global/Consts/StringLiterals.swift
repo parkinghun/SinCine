@@ -41,6 +41,6 @@ enum StringLiterals {
     }
     
     enum ImageURL: String {
-        case base = "https://image.tmdb.org/t/p/w500/"
+        case base = "https://image.tmdb.org/t/p/original/"
     }
 }
