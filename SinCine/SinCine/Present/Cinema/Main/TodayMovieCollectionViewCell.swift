@@ -22,7 +22,7 @@ final class TodayMovieCollectionViewCell: UICollectionViewCell, ReusableViewProt
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 12
         imageView.clipsToBounds = true
-        imageView.backgroundColor = .red
+        imageView.backgroundColor = .gray
         return imageView
     }()
     

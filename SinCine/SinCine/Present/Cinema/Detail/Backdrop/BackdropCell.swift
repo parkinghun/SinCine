@@ -12,9 +12,9 @@ final class BackdropCell: UICollectionViewCell, ReusableViewProtocol {
     let backdropImageVIew = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "mainImage")
-        imageView.backgroundColor = .yellow
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
+        imageView.backgroundColor = .gray
         return imageView
     }()
     
@@ -30,13 +30,11 @@ final class BackdropCell: UICollectionViewCell, ReusableViewProtocol {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     /// BackdropImageView 데이터 적용
     /// - Parameter item: 백드롭 이미지 URL
     func configure(imageURL: URL?) {
         backdropImageVIew.downSampling(url: imageURL)
     }
-    
 }
 
 extension BackdropCell: ConfigureViewProtocol {

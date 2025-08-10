@@ -10,14 +10,12 @@ import SnapKit
 
 final class CinemaDetailView: BaseView {
     let tableView = {
-        let tv = UITableView()
+        let tv = UITableView(frame: .zero, style: .grouped)
         tv.showsVerticalScrollIndicator = false
         tv.separatorStyle = .none
         tv.backgroundColor = .clear
         return tv
-        
     }()
-    
     
     override func configureHierachy() {
         addSubview(tableView)

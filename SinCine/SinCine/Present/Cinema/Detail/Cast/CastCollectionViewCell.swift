@@ -14,7 +14,7 @@ final class CastTableViewCell: UITableViewCell, ReusableViewProtocol {
     
     let profileImageView = {
         let imageView = UIImageView()
-        imageView.backgroundColor = .red
+        imageView.backgroundColor = .gray
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView

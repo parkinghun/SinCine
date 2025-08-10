@@ -14,7 +14,7 @@ final class CinemaSearchTalbeViewCell: UITableViewCell, ReusableViewProtocol {
     
     let posterImageView = {
         let imageView = UIImageView()
-        imageView.backgroundColor = .red
+        imageView.backgroundColor = .gray
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 12
         imageView.clipsToBounds = true
@@ -89,28 +89,16 @@ final class CinemaSearchTalbeViewCell: UITableViewCell, ReusableViewProtocol {
     func configureBTAction() {
         likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
     }
-    
-    /*
-     1. 버튼 클릭 -> UpdateUI
-     2. 클로저 ->
-     3.
-     
-     셀의 addTarget 등.. 처리는 어디서 하는지
-     
-     */
+
     @objc private func likeButtonTapped() {
         print(#function)
         NotificationCenter.default.post(name: .searchLikeTapped, object: self)
-//        NotificationCenter.default.post(name: .profileViewTapped, object: nil)
     }
     
-    // 무비는 어디서 가져와?
     func configureLikeImage(row movie: Movie) {
         let likeImage = movie.isLike ? Images.heartFill : Images.heart
         likeButton.setImage(likeImage, for: .normal)
     }
-    
-    
 }
 
 extension CinemaSearchTalbeViewCell: ConfigureViewProtocol {
@@ -157,6 +145,4 @@ extension CinemaSearchTalbeViewCell: ConfigureViewProtocol {
     func configureView() {
         self.backgroundColor = .clear
     }
-    
-    
 }

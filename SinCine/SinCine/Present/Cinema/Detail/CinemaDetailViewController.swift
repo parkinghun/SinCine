@@ -9,27 +9,23 @@ import UIKit
 
 final class CinemaDetailViewController: UIViewController, ConfigureViewControllerProtocol {
     
+    let detailView = CinemaDetailView()
     var movie: Movie
     var backdropList: [Backdrop] = [] {
         didSet {
-            //TODO: - 수정 필요(하드코딩 뺴기)
-            detailView.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
+            detailView.tableView.reloadSections(IndexSet(integer: Sections.backdrop.rawValue), with: .automatic)
         }
     }
     var castList: [Cast] = [] {
         didSet {
-            detailView.tableView.reloadSections(IndexSet(integer: 2), with: .automatic)
+            detailView.tableView.reloadSections(IndexSet(integer: Sections.cast.rawValue), with: .automatic)
         }
     }
-    
-    let detailView = CinemaDetailView()
-    
     private var isTappedMoreButton = false {
         didSet {
-            detailView.tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
+            detailView.tableView.reloadSections(IndexSet(integer: Sections.synopsis.rawValue), with: .automatic)
         }
     }
-    
     var heartImage: UIImage? {
         return movie.isLike ? Images.heartFill : Images.heart
     }
@@ -41,7 +37,6 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
     
     init(movie: Movie) {
         self.movie = movie
-        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -67,8 +62,6 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
     }
     
     @objc private func likeBarButtonTapped() {
-        print(#function, "heart 눌림")
-        
         movie.isLike.toggle()
         LikeManager.shared.toggleLike(for: movie.id)
         heartBarButtonItem.image = heartImage
@@ -94,7 +87,7 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
             guard let self else { return }
             
             switch result {
-            case .success(let result): // 0개나옴
+            case .success(let result):
                 backdropList = Array(result.backdrops.prefix(5))
                 
             case .failure(let error):
@@ -116,7 +109,6 @@ final class CinemaDetailViewController: UIViewController, ConfigureViewControlle
             }
         }
     }
-    
 }
 
 extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource {
@@ -124,7 +116,6 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
         return Sections.allCases.count
     }
     
-    //TODO: 수정하기
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch Sections.allCases[section] {
         case .backdrop: return 1
@@ -133,7 +124,6 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
         }
     }
     
-    //TODO: TableViewCell 리턴해주기
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let section = Sections.allCases[indexPath.section]
@@ -149,7 +139,6 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
         case .synopsis:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: SynopsisTableViewCell.identifier, for: indexPath) as? SynopsisTableViewCell else { return UITableViewCell() }
             
-            // 데이터 전송
             cell.configureSummaryLabel(isTappedMoreBT: isTappedMoreButton)
             cell.configure(overview: movie.overview)
             cell.selectionStyle = .none
@@ -175,7 +164,7 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
         case .synopsis:
             return UITableView.automaticDimension
         case .cast:
-            return 50
+            return 80
         }
     }
     
@@ -192,6 +181,7 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
             }
             
             header.delegate = self
+            header.updateMoreButton(isTapped: isTappedMoreButton)
             return header
         }
     }
@@ -201,7 +191,7 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
         case .backdrop:
             guard let footer = tableView.dequeueReusableHeaderFooterView(withIdentifier: BackdropFooterView.identifier) as? BackdropFooterView else { return UIView() }
             
-            let genre = movie.getGenre.map { $0 }.joined(separator: ", ")
+            let genre = movie.getGenre.map { $0 }.prefix(3).joined(separator: ", ")
             
             footer.configure(date: movie.releaseDate, rate: "\(movie.formattedRate)", genre: genre)
             
@@ -238,13 +228,12 @@ extension CinemaDetailViewController: UITableViewDelegate, UITableViewDataSource
 
 extension CinemaDetailViewController: SynopsisHeaderViewDelegate {
     func handleMoreButtonAction() {
-        print(#function)
         isTappedMoreButton.toggle()
     }
 }
 
 extension CinemaDetailViewController {
-    enum Sections: CaseIterable {
+    enum Sections: Int, CaseIterable {
         case backdrop
         case synopsis
         case cast

@@ -12,6 +12,7 @@ final class CastHeaderView: UITableViewHeaderFooterView, ReusableViewProtocol {
     let castLabel = {
        let label = UILabel()
         label.text = "Cast"
+        label.textColor = .white
         return label
     }()
     

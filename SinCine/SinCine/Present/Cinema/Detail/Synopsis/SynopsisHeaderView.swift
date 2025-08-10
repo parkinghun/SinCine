@@ -42,6 +42,10 @@ final class SynopsisHeaderView: UITableViewHeaderFooterView, ConfigureViewProtoc
         fatalError("init(coder:) has not been implemented")
     }
     
+    func updateMoreButton(isTapped: Bool) {
+        moreButton.setTitle(isTapped ? "Hide" : "More", for: .normal)
+    }
+    
     func configureHierachy() {
         self.addSubview(synopsisLabel)
         self.addSubview(moreButton)
@@ -65,8 +69,5 @@ final class SynopsisHeaderView: UITableViewHeaderFooterView, ConfigureViewProtoc
     
     @objc private func moreButtonTapped() {
         delegate?.handleMoreButtonAction()
-        
     }
-    
-    
 }

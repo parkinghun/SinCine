@@ -29,6 +29,10 @@ final class MainTabBarController: UITabBarController {
         self.tabBar.unselectedItemTintColor = Colors.lightGray
         self.tabBar.tintColor = Colors.mainColor
         
+        let appearance = UITabBarAppearance()
+        appearance.backgroundColor = .black
+        self.tabBar.standardAppearance = appearance
+        
         guard let items = self.tabBar.items else { return }
         items[0].image = UIImage(systemName: "popcorn")
         items[0].title = "CINEMA"
