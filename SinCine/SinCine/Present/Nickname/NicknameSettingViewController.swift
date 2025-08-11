@@ -79,11 +79,13 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
         if valid {
             guard let nickname = nicknameView.nicknameTextField.text else { return }
             
-            showToastMessage(status: .check, message: "닉네임이 설정되었습니다!")
             UserManager.shared.saveUser(User(nickname: nickname))
             settingDelegate?.handleUserUpdate()
-            
             dismiss(animated: true)
+
+            guard let sceneDelegate = getSceneDelegate(),
+                  let rootVC = sceneDelegate.window?.rootViewController else { return }
+            rootVC.showToastMessage(status: .check, message: "닉네임이 설정되었습니다!")
         } else {
             showToastMessage(status: .warning, message: validMessage)
         }
@@ -112,15 +114,14 @@ extension NicknameSettingViewController: NicknameViewDelegate {
     func handleCompleteButton() {
         if valid {
             guard let nickname = nicknameView.nicknameTextField.text else { return }
-            showToastMessage(status: .check, message: "닉네임이 설정되었습니다!")
+            
             UserManager.shared.saveUser(User(nickname: nickname))
             
-            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                  let sceneDelegate = windowScene.delegate as? SceneDelegate else { return }
-            
+            guard let sceneDelegate = getSceneDelegate() else { return }
             sceneDelegate.setRootViewController()
-            print(#function)
-            print(nickname)
+            
+            guard let rootVC = sceneDelegate.window?.rootViewController else { return }
+            rootVC.showToastMessage(status: .check, message: "닉네임이 설정되었습니다!")
         } else {
             showToastMessage(status: .warning, message: validMessage)
         }

@@ -65,4 +65,11 @@ extension UIViewController {
             toastView.removeFromSuperview()
         }
     }
+    
+    func getSceneDelegate() -> SceneDelegate? {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let sceneDelegate = windowScene.delegate as? SceneDelegate else { return nil }
+        
+        return sceneDelegate
+    }
 }

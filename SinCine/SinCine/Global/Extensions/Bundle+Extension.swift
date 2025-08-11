@@ -14,7 +14,7 @@ extension Bundle {
             fatalError("Couldn't find file 'Info.plist'.")
         }
         
-        guard let value = plistDict.object(forKey: StringLiterals.BundleKey.movie) as? String else {
+        guard let value = plistDict.object(forKey: StringLiterals.BundleKey.movie.rawValue) as? String else {
             fatalError("Couldn't find key 'APIKey' in 'APIKey.plist'.")
         }
         
