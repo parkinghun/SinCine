@@ -21,7 +21,7 @@ final class CinemaSearchViewController: UIViewController, ConfigureViewControlle
     private var page = 1
     private var totalPages = 1
     
-    // 최근 검색어로 진입 시 사용
+    /// 최근 검색어로 진입 시 사용
     convenience init(query: String) {
         self.init(nibName: nil, bundle: nil)
         fetchQuery(query)

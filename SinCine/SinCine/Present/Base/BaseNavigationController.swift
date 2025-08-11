@@ -26,7 +26,5 @@ class BaseNavigationController: UINavigationController {
         
         navigationBar.tintColor = Colors.mainColor
         navigationBar.standardAppearance = appearance
-//        navigationBar.compactAppearance = appearance
-//        navigationBar.scrollEdgeAppearance = appearance
     }
 }

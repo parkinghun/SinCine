@@ -85,7 +85,6 @@ struct Movie: Decodable {
         return URL(string: urlString)
     }
     
-    // 장르
     var getGenre: [String] {
         var genreList: [String] = []
 

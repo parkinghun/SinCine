@@ -21,15 +21,14 @@ final class CastTableViewCell: UITableViewCell, ReusableViewProtocol {
     }()
     
     let nameLabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.text = "현빈"
         label.textColor = .white
         return label
     }()
     
     let originalNameLabel = {
-       let label = UILabel()
-        label.text = "Anh Jung-geun"
+        let label = UILabel()
         label.textColor = .white
         label.font = .systemFont(ofSize: 12)
         return label

@@ -11,12 +11,19 @@ import SnapKit
 final class MyProfileView: BaseView, ReusableViewProtocol {
     
     let profileView = ProfileView()
-    let tableView = UITableView(frame: .zero, style: .plain)
+    lazy var tableView = {
+        let tv = UITableView()
+        tv.backgroundColor = .clear
+        tv.separatorStyle = .none
+        tv.isScrollEnabled = false
+        tv.register(ProfileTableViewCell.self, forCellReuseIdentifier: ProfileTableViewCell.identifier)
+        return tv
+    }()
     
     override func configureHierachy() {
-        addSubview(profileView)
-        addSubview(tableView)
-    } 
+        self.addSubview(profileView)
+        self.addSubview(tableView)
+    }
     
     override func configureLayout() {
         profileView.snp.makeConstraints { make in
@@ -26,7 +33,7 @@ final class MyProfileView: BaseView, ReusableViewProtocol {
         }
         
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(profileView.snp.bottom).offset(12)
+            make.top.equalTo(profileView.snp.bottom).offset(16)
             make.horizontalEdges.equalTo(profileView)
             make.bottom.equalTo(safeAreaLayoutGuide)
         }
@@ -35,10 +42,5 @@ final class MyProfileView: BaseView, ReusableViewProtocol {
     override func configureView() {
         profileView.layer.cornerRadius = 12
         profileView.clipsToBounds = true
-        
-        tableView.backgroundColor = .clear
-        tableView.separatorStyle = .singleLine
-        tableView.separatorColor = Colors.lightGray
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: MyProfileView.identifier)
     }
 }

@@ -33,6 +33,8 @@ final class NicknameDetailViewController: UIViewController, ConfigureViewControl
         settingVC.configureTextField(text: nickname)
         settingVC.valid = isValid(text: nickname).valid
         settingVC.validMessage = isValid(text: nickname).state
+        settingVC.navigationItem.rightBarButtonItem?.isEnabled = true
+        settingVC.navigationItem.rightBarButtonItem?.tintColor = Colors.mainColor
     }
     
     private func setupNavigationItem() {
@@ -76,6 +78,10 @@ extension NicknameDetailViewController: UITextFieldDelegate {
         guard text.count >= 2, text.count <= 10 else {
             nicknameView.configureStateLabel(StringLiterals.NicknameState.numberOfCharacters.rawValue)
             return (false, StringLiterals.NicknameState.numberOfCharacters.rawValue)
+        }
+        
+        guard UserManager.shared.currentUser?.nickname != text else {
+            return(false, StringLiterals.NicknameState.sameNickname.rawValue)
         }
         
         nicknameView.configureStateLabel(StringLiterals.NicknameState.ok.rawValue)

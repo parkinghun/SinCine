@@ -10,11 +10,10 @@ import SnapKit
 
 final class BackdropFooterView: UITableViewHeaderFooterView, ConfigureViewProtocol, ReusableViewProtocol {
     
-    let dateView = BackdropDescriptonView(imageType: .calendar, text: "2024-12-24")
-    let rateView = BackdropDescriptonView(imageType: .star, text: "8.0")
-    let genreView = BackdropDescriptonView(imageType: .film, text: "액션, 스릴러")
+    let dateView = BackdropDescriptonView(imageType: .calendar, text: "")
+    let rateView = BackdropDescriptonView(imageType: .star, text: "")
+    let genreView = BackdropDescriptonView(imageType: .film, text: "")
     
-    // intrinsic content size를 잡을 수 있도록 각각의 뷰의 사이즈를 이정해줘야 한다.
     lazy var stackView = {
        let sv = UIStackView(arrangedSubviews: [dateView, makeDivider(), rateView, makeDivider(), genreView])
         sv.axis = .horizontal

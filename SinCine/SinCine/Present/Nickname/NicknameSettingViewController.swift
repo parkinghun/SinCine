@@ -19,8 +19,6 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
     let nicknameView: NicknameView
     let isDetailView: Bool
     let isModal: Bool
-    
-    
     var valid = false
     var validMessage = StringLiterals.NicknameState.numberOfCharacters.rawValue
     
@@ -61,6 +59,8 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
             let leftBarButtonItem = UIBarButtonItem(image: Images.xmark, style: .plain, target: self, action: #selector(leftBarButtonTapped))
             
             let rightBarButtonItem = UIBarButtonItem(title: "저장", style: .plain, target: self, action: #selector(saveButtonTapped))
+            rightBarButtonItem.isEnabled = false
+            rightBarButtonItem.tintColor = Colors.lightGray
             
             navigationItem.leftBarButtonItem = leftBarButtonItem
             navigationItem.rightBarButtonItem = rightBarButtonItem
@@ -88,7 +88,6 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
             showToastMessage(status: .warning, message: validMessage)
         }
     }
-    
     
     func configureTextField(text: String) {
         nicknameView.configureTextField(text: text)

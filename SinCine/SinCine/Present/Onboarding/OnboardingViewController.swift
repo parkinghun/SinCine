@@ -31,6 +31,5 @@ final class OnboardingViewController: UIViewController, ConfigureViewControllerP
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
-    
 }
 

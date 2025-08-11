@@ -19,7 +19,6 @@ final class NicknameView: BaseView {
     var isDetailView: Bool?
     var isModal: Bool?
     
-    // TextField
     let nicknameTextField = {
         let tf = UITextField()
         tf.textColor = Colors.white
@@ -27,10 +26,9 @@ final class NicknameView: BaseView {
         tf.becomeFirstResponder()
         return tf
     }()
-    // editButton - BorderButton
+
     let editButton = BorderButton(title: "편집", color: .white, font: .regular, width: 1)
     
-    // StackView
     lazy var textFieldStackView = {
         let sv = UIStackView(arrangedSubviews: [nicknameTextField, editButton])
         sv.axis = .horizontal
@@ -40,17 +38,13 @@ final class NicknameView: BaseView {
         return sv
     }()
     
-    // underlineView
     let textFieldBorderView = {
         let view = UIView()
         view.backgroundColor = .white
         return view
     }()
     
-    // 완료 버튼
     let completeButton = BorderButton(title: "완료")
-    
-    // stateLabel
     let stateLabel = {
         let label = UILabel()
         label.textColor = Colors.mainColor
@@ -75,10 +69,8 @@ final class NicknameView: BaseView {
         configureLayout()
         configureView()
         setupAction()
-        
         configureUI()
     }
-    
     
     func configureTextField(text: String) {
         nicknameTextField.text = text

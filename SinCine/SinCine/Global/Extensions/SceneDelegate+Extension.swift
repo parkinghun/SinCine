@@ -10,7 +10,6 @@ import UIKit
 
 extension SceneDelegate {
     func setRootViewController() {
-        
         let rootVC: UIViewController
         
         if UserManager.shared.currentUser == nil {

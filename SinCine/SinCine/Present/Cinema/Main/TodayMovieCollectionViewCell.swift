@@ -69,11 +69,6 @@ final class TodayMovieCollectionViewCell: UICollectionViewCell, ReusableViewProt
         likeButton.setImage(image, for: .normal)
     }
     
-//    func updateHeart(isLike: Bool) {
-//        let image = isLike ? Images.heartFill : Images.heart
-//        likeButton.setImage(image, for: .normal)
-//    }
-    
     private func configureAction() {
         likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
     }

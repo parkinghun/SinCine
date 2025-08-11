@@ -18,6 +18,7 @@ enum StringLiterals {
         case numberOfCharacters = "2글자 이상 10글자 미만으로 설정해주세요"
         case specialCharacters = "닉네임에 @, #, $, % 는 포함할 수 없어요"
         case includeNumbers = "닉네임에 숫자는 포함할 수 없어요"
+        case sameNickname = "같은 닉네임으로 변경할 수 없어요"
     }
 
     enum CollectionTitle: String {
@@ -42,5 +43,9 @@ enum StringLiterals {
     
     enum ImageURL: String {
         case base = "https://image.tmdb.org/t/p/original/"
+    }
+    
+    enum BundleKey: String {
+        case movie = "MovieKey"
     }
 }

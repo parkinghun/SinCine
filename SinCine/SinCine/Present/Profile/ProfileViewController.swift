@@ -65,11 +65,9 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: MyProfileView.identifier, for: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.identifier, for: indexPath) as? ProfileTableViewCell else { return UITableViewCell() }
         
-        cell.textLabel?.text = rows[indexPath.row].rawValue
-        cell.textLabel?.textColor = .white
-        cell.backgroundColor = .black
+        cell.configure(title: rows[indexPath.row].rawValue)
         cell.selectionStyle = .none
         
         return cell
@@ -84,10 +82,8 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
             print(#function)
             
             showDeleteAlert(title: "탈퇴하기", message: "탈퇴를 하면 데이터가 모두 초기화됩니다. 탈퇴하시겠습니까?") {
-                // 회원 탈퇴
                 UserManager.shared.deleteUSer()
                 
-                // 루트 뷰 변경 -> 신델리겟
                 guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                       let sceneDelegate = windowScene.delegate as? SceneDelegate else { return }
                 

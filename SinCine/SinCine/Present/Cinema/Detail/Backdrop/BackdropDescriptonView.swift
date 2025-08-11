@@ -54,7 +54,6 @@ final class BackdropDescriptonView: UIView, ConfigureViewProtocol {
     func configureView() {
         self.backgroundColor = .clear
     }
-    
 }
 
 extension BackdropDescriptonView {

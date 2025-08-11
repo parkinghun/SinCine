@@ -96,9 +96,6 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
         cinemaMainView.delegate = self
         LikeManager.shared.delegate = self
         UserManager.shared.delegate = self
-        //TODO: - FINN님 피드백
-        // 뷰 -> 메인 안전 , 뷰가 아니면 안전한지
-        // 역할 분리/ 싱그톤에 델리겟이 맞는지
     }
     
     func configureNotification() {
