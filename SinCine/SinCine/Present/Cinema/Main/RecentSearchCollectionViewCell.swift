@@ -7,6 +7,8 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 protocol RecentSearCellDelegate: AnyObject {
     func handleKeywordTapped(cell: RecentSearchCollectionViewCell)
@@ -16,10 +18,10 @@ protocol RecentSearCellDelegate: AnyObject {
 final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewProtocol {
     
     weak var delegate: RecentSearCellDelegate?
-    
+        
     let keywordLabel = {
         let label = UILabel()
-        label.configure(text: "Test", color: Colors.black, font: .medium)
+        label.configure(text: "", color: Colors.black, font: .medium)
         label.textAlignment = .center
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
         label.isUserInteractionEnabled = true
@@ -47,11 +49,23 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
         return sv
     }()
     
+    let deleteButtonTapped = PublishRelay<String>()
+    private var keyword: String?
+    var disposeBag =  DisposeBag()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureHierachy()
         configureLayout()
         configureView()
+        
+        bindUI()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        disposeBag = DisposeBag()
     }
     
     override func layoutSubviews() {
@@ -69,7 +83,16 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
     }
     
     func configure(keyword: String) {
+        self.keyword = keyword
         keywordLabel.text = keyword
+    }
+    
+    private func bindUI() {
+        deleteButton.rx.tap
+            .withUnretained(self)
+            .compactMap { _ in self.keyword }
+            .bind(to: deleteButtonTapped)
+            .disposed(by: disposeBag)
     }
 }
 

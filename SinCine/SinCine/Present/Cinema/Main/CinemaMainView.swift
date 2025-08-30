@@ -7,14 +7,10 @@
 
 import UIKit
 import SnapKit
-
-protocol CinemaMainViewDelegate: AnyObject {
-    func handleRemoveAllButton()
-}
+import RxSwift
+import RxCocoa
 
 final class CinemaMainView: BaseView {
-    
-    weak var delegate: CinemaMainViewDelegate?
 
     let profileView = ProfileView()
     let recentSearchLabel = {
@@ -79,11 +75,12 @@ final class CinemaMainView: BaseView {
         return collectionView
     }()
     
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-//        configureDelegation()
+    private let viewModel: CinemaMainViewModel
+    private let disposeBag = DisposeBag()
+
+    init(viewModel: CinemaMainViewModel) {
+        self.viewModel = viewModel
+        super.init(frame: .zero)
     }
     
     func configureRecentSearch(isEmpty: Bool) {
@@ -142,12 +139,6 @@ final class CinemaMainView: BaseView {
     override func configureView() {
         profileView.layer.cornerRadius = 12
         profileView.clipsToBounds = true
-        removeAllButton.addTarget(self, action: #selector(removeAllButtonTapped), for: .touchUpInside)
-    }
-    
-    @objc private func removeAllButtonTapped() {
-        print(#function)
-        delegate?.handleRemoveAllButton()
     }
 }
 

@@ -64,7 +64,7 @@ final class CinemaSearchViewController: UIViewController, ConfigureViewControlle
             }
         }
         
-        RecentSearchManager.shared.addRecentSearch(keyword: query)
+        RecentSearchStore.shared.addRecentSearch(keyword: query)
         cinemaSearchView.dismissSearchBarKeyboard()
     }
     

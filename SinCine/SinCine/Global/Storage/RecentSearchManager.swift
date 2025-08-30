@@ -6,15 +6,23 @@
 //
 
 import Foundation
+import RxSwift
+import RxCocoa
 
-final class RecentSearchManager {
-    static let shared = RecentSearchManager()
-    
+final class RecentSearchStore {
+    static let shared = RecentSearchStore()
+
     private let storage = UserDefaultsManager<[String]>(key: .recentSearch)
-    private(set) var searchList: [String] = []
+    private let searchListRelay = BehaviorRelay<[String]>(value: [])
+    private let disposeBag = DisposeBag()
+    
+    var searchList: Driver<[String]> {
+        return searchListRelay.asDriver(onErrorJustReturn: [])
+    }
     
     private init() {
-        self.searchList = getRecentSearch()
+        let recentSearchList = getRecentSearch()
+        searchListRelay.accept(recentSearchList)
     }
     
     func getRecentSearch() -> [String] {
@@ -22,26 +30,29 @@ final class RecentSearchManager {
         return searchList
     }
 
-    func addRecentSearch(keyword: String) {
-        if let searchIndex = searchList.firstIndex(of: keyword) {
-            searchList.remove(at: searchIndex)
-            searchList.insert(keyword, at: 0)
-        } else {
-            searchList.insert(keyword, at: 0)
+    // storage에 저장하고, 별개로 바로 객체를 업데이트해줌(다시 userDefaults에서 받지 않고 이벤트 방출)
+    func addRecentSearch(keyword: String) {    
+        var list = searchListRelay.value
+    
+        if let searchIndex = list.firstIndex(of: keyword) {
+            list.remove(at: searchIndex)
         }
+        list.insert(keyword, at: 0)
  
-        storage.save(data: searchList)
+        storage.save(data: list)
+        searchListRelay.accept(list)
     }
     
-    func removeSearchKeyword(index: Int, completionHandler: (() -> Void)? = nil) {
-        searchList.remove(at: index)
-        storage.save(data: searchList)
-        completionHandler?()
+    func removeSearchKeyword(_ keyword: String, completionHandler: (() -> Void)? = nil) {
+        var list = searchListRelay.value
+        list.removeAll { $0 == keyword }
+        
+        storage.save(data: list)
+        searchListRelay.accept(list)
     }
     
     func removeAll(completionHandler: (() -> Void)? = nil) {
-        searchList = []
         storage.removeData()
-        completionHandler?()
+        searchListRelay.accept([])
     }
 }

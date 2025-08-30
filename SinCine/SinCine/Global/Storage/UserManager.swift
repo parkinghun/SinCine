@@ -43,6 +43,6 @@ final class UserManager {
         userDefaultsManager.removeData()
         
         LikeManager.shared.removeAll()
-        RecentSearchManager.shared.removeAll()
+        RecentSearchStore.shared.removeAll()
     }
 }

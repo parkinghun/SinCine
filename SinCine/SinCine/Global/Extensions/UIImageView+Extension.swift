@@ -16,6 +16,7 @@ extension UIImageView {
         return iv
     }
     
+    // 네트워크 환경에 따라 다른 이미지 해상도(lte, wifi 변경시 이미지 다시 받아오기 이미지 해상도 처리)
     func downSampling(url: URL?, size: CGSize = CGSize(width: 300, height: 300)) {
         self.kf.indicatorType = .activity
         self.kf.setImage(

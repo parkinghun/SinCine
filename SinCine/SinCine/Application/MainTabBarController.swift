@@ -18,7 +18,7 @@ final class MainTabBarController: UITabBarController {
     func configure() {
         view.backgroundColor = Colors.black
         
-        let cinemaVC = CinemaMainViewController()
+        let cinemaVC = CinemaMainViewController(viewModel: CinemaMainViewModel())
         let upcomingVC = UIViewController()
         let profileVC = ProfileViewController()
         
