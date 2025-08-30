@@ -6,24 +6,33 @@
 //
 
 import Foundation
+import RxSwift
+import RxCocoa
 
-protocol LikeManagerDelegate: AnyObject {
-    func updateLikeUI()
-}
+//protocol LikeManagerDelegate: AnyObject {
+//    func updateLikeUI()
+//}
 
 final class LikeManager {
     static let shared = LikeManager()
     private let storage = UserDefaultsManager<[Int]>(key: .like)
     
-    weak var delegate: LikeManagerDelegate?
-    private(set) var likeList: [Int] = [] {
-        didSet {
-            delegate?.updateLikeUI() 
-        }
+//    weak var delegate: LikeManagerDelegate?
+    private(set) var likeList = BehaviorRelay<[Int]>(value: [])
+    
+//    private(set) var likeList: [Int] = [] {
+//        didSet {
+//            delegate?.updateLikeUI() 
+//        }
+//    }
+    
+    var getAllLikeMovieIDs: [Int] {
+        return storage.fetch() ?? []
     }
     
     private init() {
-        self.likeList = getAllLikeMovieIDs
+        likeList.accept(getAllLikeMovieIDs)
+//        self.likeList = getAllLikeMovieIDs
     }
     
     func isLike(movieID: Int) -> Bool {
@@ -41,12 +50,8 @@ final class LikeManager {
             currentLikes.append(movieID)
         }
         
-        likeList = currentLikes
+        likeList.accept(currentLikes)
         storage.save(data: Array(currentLikes))
-    }
-    
-    var getAllLikeMovieIDs: [Int] {
-        return storage.fetch() ?? []
     }
     
     func removeAll() {

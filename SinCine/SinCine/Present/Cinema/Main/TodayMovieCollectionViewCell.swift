@@ -8,14 +8,13 @@
 import UIKit
 import SnapKit
 import Kingfisher
-
-protocol TodayMovieCellDelegate: AnyObject {
-    func handleLikeButtonAction(cell: TodayMovieCollectionViewCell)
-}
+import RxSwift
+import RxCocoa
 
 final class TodayMovieCollectionViewCell: UICollectionViewCell, ReusableViewProtocol {
     
-    weak var delegate: TodayMovieCellDelegate?
+    let likeButtonTapped = PublishRelay<Int>()
+    private var movieId: Int?
     
     let posterImageView = {
        let imageView = UIImageView()
@@ -47,13 +46,19 @@ final class TodayMovieCollectionViewCell: UICollectionViewCell, ReusableViewProt
         return label
     }()
     
+    var disposeBag = DisposeBag()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         configureHierachy()
         configureLayout()
         configureView()
-        configureAction()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.disposeBag = DisposeBag()
     }
     
     required init?(coder: NSCoder) {
@@ -61,6 +66,7 @@ final class TodayMovieCollectionViewCell: UICollectionViewCell, ReusableViewProt
     }
     
     func configureUI(data: Movie) {
+        movieId = data.id
         posterImageView.downSampling(url: data.posterURL)
         titleLabel.text = data.title
         overviewLabel.text = data.overview
@@ -69,12 +75,12 @@ final class TodayMovieCollectionViewCell: UICollectionViewCell, ReusableViewProt
         likeButton.setImage(image, for: .normal)
     }
     
-    private func configureAction() {
-        likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
-    }
-    
-    @objc private func likeButtonTapped() {
-        delegate?.handleLikeButtonAction(cell: self)
+    private func bindUI() {
+        likeButton.rx.tap
+            .withUnretained(self)
+            .compactMap { _ in self.movieId }
+            .bind(to: likeButtonTapped)
+            .disposed(by: disposeBag)
     }
 }
 
@@ -114,6 +120,4 @@ extension TodayMovieCollectionViewCell: ConfigureViewProtocol {
     func configureView() {
         self.backgroundColor = .clear
     }
-    
-    
 }

@@ -39,7 +39,7 @@ final class ProfileViewController: UIViewController, ConfigureViewControllerProt
     
     private func configureProfile() {
         guard let user = UserManager.shared.currentUser else { return }
-        myProfileView.profileView.configureUI(data: user, like: LikeManager.shared.likeList)
+        myProfileView.profileView.configureUI(data: user, like: LikeManager.shared.likeList.value)
     }
     
     func configureNotification() {

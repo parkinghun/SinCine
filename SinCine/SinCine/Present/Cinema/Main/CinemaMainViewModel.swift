@@ -15,13 +15,15 @@ final class CinemaMainViewModel: ViewModelType {
         let recentSearchRemovieItem: PublishRelay<String>
         let recentSearchTapped: ControlEvent<String>
         let todayCellSelected: ControlEvent<Movie>
+        let likeButtonTapped: PublishRelay<Int>
     }
     struct Output {
         let todayMovieList: Driver<[Movie]>
         let searchList: Driver<[String]>
         let searchListIsEmpty: Driver<Bool>
         let detailMovieInfo: PublishRelay<Movie>
-        
+        let likeTitle: Driver<String>
+        // profileData
     }
     
     typealias TodayMovieResult = Result<MovieResult, NetworkError>
@@ -36,6 +38,7 @@ final class CinemaMainViewModel: ViewModelType {
         let todayMovieList = PublishRelay<[Movie]>()
         let searchList = recentSearchStore.searchList
         let detailMovieInfo = PublishRelay<Movie>()
+        let likeList = LikeManager.shared.likeList
         
         input.recentSearhRemoveAll
             .bind(with: self) { owner, _ in
@@ -63,9 +66,15 @@ final class CinemaMainViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
         
-        
-        let todayDriver = todayMovieList
+        let mergedMovieList: Driver<[Movie]> = Observable.combineLatest(todayMovieList, likeList) { movies, likeIds in
+            movies.map { movie in
+                var updateMovie = movie
+                updateMovie.isLike = likeIds.contains(movie.id)
+                return updateMovie
+            }
+        }
             .asDriver(onErrorJustReturn: [])
+
         
         let searchListIsEmpty = searchList
             .map { $0.isEmpty }
@@ -75,7 +84,18 @@ final class CinemaMainViewModel: ViewModelType {
                 detailMovieInfo.accept(value)
             }.disposed(by: disposeBag)
         
-        return Output(todayMovieList: todayDriver, searchList: searchList, searchListIsEmpty: searchListIsEmpty, detailMovieInfo: detailMovieInfo)
+        let likeTitle = likeList
+            .map { "\($0.count)개의 무비박스 보관중" }
+            .asDriver(onErrorJustReturn: "")
+        
+        
+        input.likeButtonTapped
+            .bind(with: self) { owner, value in
+                LikeManager.shared.toggleLike(for: value)
+            }
+            .disposed(by: disposeBag)
+        
+        return Output(todayMovieList: mergedMovieList, searchList: searchList, searchListIsEmpty: searchListIsEmpty, detailMovieInfo: detailMovieInfo, likeTitle: likeTitle)
     }
 }
 
