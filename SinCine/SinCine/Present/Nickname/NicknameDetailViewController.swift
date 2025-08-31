@@ -80,7 +80,7 @@ extension NicknameDetailViewController: UITextFieldDelegate {
             return (false, StringLiterals.NicknameState.numberOfCharacters.rawValue)
         }
         
-        guard UserManager.shared.currentUser?.nickname != text else {
+        guard UserManager.shared.currentUser.value?.nickname != text else {
             return(false, StringLiterals.NicknameState.sameNickname.rawValue)
         }
         

@@ -13,7 +13,7 @@ struct User: Codable {
     
     init(nickname: String) {
         self.nickname = nickname
-        self.date = UserManager.shared.currentUser?.date ?? .now
+        self.date = UserManager.shared.currentUser.value?.date ?? .now
     }
     
     var formattedDate: String {

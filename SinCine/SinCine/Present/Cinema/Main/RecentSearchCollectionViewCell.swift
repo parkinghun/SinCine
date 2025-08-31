@@ -10,14 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-protocol RecentSearCellDelegate: AnyObject {
-    func handleKeywordTapped(cell: RecentSearchCollectionViewCell)
-    func handleDeleteButton(cell: RecentSearchCollectionViewCell)
-}
-
 final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewProtocol {
-    
-    weak var delegate: RecentSearCellDelegate?
         
     let keywordLabel = {
         let label = UILabel()
@@ -49,8 +42,6 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
         return sv
     }()
     
-    let deleteButtonTapped = PublishRelay<String>()
-    private var keyword: String?
     var disposeBag =  DisposeBag()
     
     override init(frame: CGRect) {
@@ -58,8 +49,6 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
         configureHierachy()
         configureLayout()
         configureView()
-        
-        bindUI()
     }
     
     override func prepareForReuse() {
@@ -83,16 +72,7 @@ final class RecentSearchCollectionViewCell: UICollectionViewCell, ReusableViewPr
     }
     
     func configure(keyword: String) {
-        self.keyword = keyword
         keywordLabel.text = keyword
-    }
-    
-    private func bindUI() {
-        deleteButton.rx.tap
-            .withUnretained(self)
-            .compactMap { _ in self.keyword }
-            .bind(to: deleteButtonTapped)
-            .disposed(by: disposeBag)
     }
 }
 
@@ -109,20 +89,5 @@ extension RecentSearchCollectionViewCell: ConfigureViewProtocol {
     
     func configureView() {
         self.backgroundColor = .clear
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(labelClicked))
-        keywordLabel.addGestureRecognizer(tapGesture)
-        
-        deleteButton.addTarget(self, action: #selector(deleteButtonClicked), for: .touchUpInside)
-    }
-    
-    @objc private func labelClicked() {
-        print(#function)
-        delegate?.handleKeywordTapped(cell: self)
-    }
-    
-    @objc private func deleteButtonClicked() {
-        print(#function)
-        delegate?.handleDeleteButton(cell: self)
     }
 }

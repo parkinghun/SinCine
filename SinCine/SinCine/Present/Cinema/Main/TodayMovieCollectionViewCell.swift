@@ -13,11 +13,8 @@ import RxCocoa
 
 final class TodayMovieCollectionViewCell: UICollectionViewCell, ReusableViewProtocol {
     
-    let likeButtonTapped = PublishRelay<Int>()
-    private var movieId: Int?
-    
     let posterImageView = {
-       let imageView = UIImageView()
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 12
         imageView.clipsToBounds = true
@@ -26,13 +23,13 @@ final class TodayMovieCollectionViewCell: UICollectionViewCell, ReusableViewProt
     }()
     
     let titleLabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.configure(text: "", font: .semiBold)
         return label
     }()
     
     let likeButton = {
-       let bt = UIButton()
+        let bt = UIButton()
         bt.setImage(Images.heart, for: .normal)
         bt.tintColor = Colors.mainColor
         bt.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -40,7 +37,7 @@ final class TodayMovieCollectionViewCell: UICollectionViewCell, ReusableViewProt
     }()
     
     let overviewLabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.configure(text: "", font: .regular)
         label.numberOfLines = 3
         return label
@@ -66,21 +63,12 @@ final class TodayMovieCollectionViewCell: UICollectionViewCell, ReusableViewProt
     }
     
     func configureUI(data: Movie) {
-        movieId = data.id
         posterImageView.downSampling(url: data.posterURL)
         titleLabel.text = data.title
         overviewLabel.text = data.overview
         
         let image = data.isLike ? Images.heartFill : Images.heart
         likeButton.setImage(image, for: .normal)
-    }
-    
-    private func bindUI() {
-        likeButton.rx.tap
-            .withUnretained(self)
-            .compactMap { _ in self.movieId }
-            .bind(to: likeButtonTapped)
-            .disposed(by: disposeBag)
     }
 }
 

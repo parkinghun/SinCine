@@ -31,7 +31,7 @@ final class RecentSearchStore {
     }
 
     // storage에 저장하고, 별개로 바로 객체를 업데이트해줌(다시 userDefaults에서 받지 않고 이벤트 방출)
-    func addRecentSearch(keyword: String) {    
+    func addRecentSearch(keyword: String) {
         var list = searchListRelay.value
     
         if let searchIndex = list.firstIndex(of: keyword) {
@@ -43,7 +43,7 @@ final class RecentSearchStore {
         searchListRelay.accept(list)
     }
     
-    func removeSearchKeyword(_ keyword: String, completionHandler: (() -> Void)? = nil) {
+    func removeSearchKeyword(_ keyword: String) {
         var list = searchListRelay.value
         list.removeAll { $0 == keyword }
         

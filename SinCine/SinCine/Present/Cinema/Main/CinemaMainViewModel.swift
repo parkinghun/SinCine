@@ -16,14 +16,18 @@ final class CinemaMainViewModel: ViewModelType {
         let recentSearchTapped: ControlEvent<String>
         let todayCellSelected: ControlEvent<Movie>
         let likeButtonTapped: PublishRelay<Int>
+        let profileTapped: ControlEvent<Void>
     }
     struct Output {
-        let todayMovieList: Driver<[Movie]>
         let searchList: Driver<[String]>
         let searchListIsEmpty: Driver<Bool>
+        let searchQuery: Driver<String>
+        let todayMovieList: Driver<[Movie]>
         let detailMovieInfo: PublishRelay<Movie>
         let likeTitle: Driver<String>
-        // profileData
+        let currentUser: Driver<User>
+        let profile: Driver<(User, String)>
+        let presentNicknameSettingView: Driver<Void>
     }
     
     typealias TodayMovieResult = Result<MovieResult, NetworkError>
@@ -35,11 +39,17 @@ final class CinemaMainViewModel: ViewModelType {
     }
     
     func transform(input: Input) -> Output {
-        let todayMovieList = PublishRelay<[Movie]>()
         let searchList = recentSearchStore.searchList
+        let searchQuery = PublishRelay<String>()
+        
+        let todayMovieList = PublishRelay<[Movie]>()
         let detailMovieInfo = PublishRelay<Movie>()
         let likeList = LikeManager.shared.likeList
+        let currentUser = UserManager.shared.currentUser
+            .compactMap { $0 }
+            .asDriver(onErrorJustReturn: .init(nickname: ""))
         
+        // 최근 검색어
         input.recentSearhRemoveAll
             .bind(with: self) { owner, _ in
                 owner.recentSearchStore.removeAll()
@@ -48,12 +58,19 @@ final class CinemaMainViewModel: ViewModelType {
         
         input.recentSearchRemovieItem
             .bind(with: self) { owner, value in
-                owner.recentSearchStore.removeSearchKeyword(value) {
-                    print("제거 완료")
-                }
+                print("x 버튼 클릭")
+                owner.recentSearchStore.removeSearchKeyword(value)
             }
             .disposed(by: disposeBag)
         
+        input.recentSearchTapped
+            .bind(to: searchQuery)
+            .disposed(by: disposeBag)
+        
+        let searchListIsEmpty = searchList
+            .map { $0.isEmpty }
+        
+        // 오늘의 영화
         getTodayMovie()
             .asObservable()
             .bind(with: self) { owner, response in
@@ -74,10 +91,6 @@ final class CinemaMainViewModel: ViewModelType {
             }
         }
             .asDriver(onErrorJustReturn: [])
-
-        
-        let searchListIsEmpty = searchList
-            .map { $0.isEmpty }
         
         input.todayCellSelected
             .bind(with: self) { owner, value in
@@ -95,7 +108,20 @@ final class CinemaMainViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
         
-        return Output(todayMovieList: mergedMovieList, searchList: searchList, searchListIsEmpty: searchListIsEmpty, detailMovieInfo: detailMovieInfo, likeTitle: likeTitle)
+        // 프로필
+        let profile: Driver<(User, String)> = Driver.combineLatest(currentUser, likeTitle)
+        let presentNicknameSettingView = input.profileTapped
+            .asDriver(onErrorJustReturn: ())
+        
+        return Output(searchList: searchList,
+                      searchListIsEmpty: searchListIsEmpty,
+                      searchQuery: searchQuery.asDriver(onErrorJustReturn: ""),
+                      todayMovieList: mergedMovieList,
+                      detailMovieInfo: detailMovieInfo,
+                      likeTitle: likeTitle,
+                      currentUser: currentUser,
+                      profile: profile,
+                      presentNicknameSettingView: presentNicknameSettingView)
     }
 }
 

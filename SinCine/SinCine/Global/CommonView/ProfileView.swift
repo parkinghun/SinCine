@@ -53,12 +53,14 @@ final class ProfileView: BaseView {
         return bt
     }()
     
-    func configureUI(data: User, like: [Int]) {
+    /// 프로필뷰 전체 UI
+    func configureUI(data: User, likeTitle: String) {
         nicknameLabel.text = data.nickname
         dateButton.setConfigureTitle("\(data.formattedDate) 가입")
-        movieBox.setTitle("\(like.count)개의 무비박스 보관중", for: .normal)
+        configureLikeLabel(likeTitle: likeTitle)
     }
     
+    // 닉네임, date만 업데이트
     func configureUserInfo(nickname: String, date: String) {
         nicknameLabel.text = nickname
         dateButton.setTitle(date, for: .normal)
@@ -90,12 +92,12 @@ final class ProfileView: BaseView {
     override func configureView() {
         backgroundColor = UIColor(hexCode: "2F2F2F")
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(stackViewTapped))
-        
-        profileStackView.addGestureRecognizer(tapGesture)
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(stackViewTapped))
+//        
+//        profileStackView.addGestureRecognizer(tapGesture)
     }
     
-    @objc func stackViewTapped() {
-        NotificationCenter.default.post(name: .profileViewTapped, object: nil)
-    }
+//    @objc func stackViewTapped() {
+//        NotificationCenter.default.post(name: .profileViewTapped, object: nil)
+//    }
 }

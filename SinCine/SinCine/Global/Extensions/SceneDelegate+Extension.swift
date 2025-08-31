@@ -12,7 +12,7 @@ extension SceneDelegate {
     func setRootViewController() {
         let rootVC: UIViewController
         
-        if UserManager.shared.currentUser == nil {
+        if UserManager.shared.currentUser.value == nil {
             rootVC = BaseNavigationController(rootViewController: OnboardingViewController())
         } else {
             rootVC = MainTabBarController()

@@ -6,40 +6,44 @@
 //
 
 import Foundation
+import RxSwift
+import RxCocoa
 
-protocol UserManagerDelegate: AnyObject {
-    func updateUserUI()
-}
+//protocol UserManagerDelegate: AnyObject {
+//    func updateUserUI()
+//}
 
 final class UserManager {
     static let shared = UserManager()
     private let userDefaultsManager = UserDefaultsManager<User>(key: .user)
     
-    weak var delegate: UserManagerDelegate?
-    private(set) var currentUser: User? {
-        didSet {
-            delegate?.updateUserUI()
-        }
-    }
+//    weak var delegate: UserManagerDelegate?
+    private(set) var currentUser = BehaviorRelay<User?>(value: nil)
     
+//    private(set) var currentUser: User? {
+//        didSet {
+//            delegate?.updateUserUI()
+//        }
+//    }
+//    
     private init() {
-        currentUser = userDefaultsManager.fetch()
+        currentUser.accept(userDefaultsManager.fetch())
     }
     
     func saveUser(_ user: User) {
-        currentUser = user
+        currentUser.accept(user)
         userDefaultsManager.save(data: user)
     }
     
     func updateUser(nickname: String) {
-        currentUser?.nickname = nickname
-        guard let currentUser else { return }
+        guard var user = currentUser.value else { return }
+        user.nickname = nickname
         
-        userDefaultsManager.save(data: currentUser)
+        userDefaultsManager.save(data: user)
     }
     
     func deleteUSer() {
-        currentUser = nil
+        currentUser.accept(nil)
         userDefaultsManager.removeData()
         
         LikeManager.shared.removeAll()

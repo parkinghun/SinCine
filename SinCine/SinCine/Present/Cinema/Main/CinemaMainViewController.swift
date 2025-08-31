@@ -33,9 +33,7 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigation(title: StringLiterals.NavigationTitle.main.rawValue)
-        configureProfile()
         setupCollectionView()
-        configureNotification()
         bind()
     }
     
@@ -48,14 +46,16 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
             recentSearchRemovieItem: deleteItem,
             recentSearchTapped: cinemaMainView.recentSearchCollectionView.rx.modelSelected(String.self),
             todayCellSelected: cinemaMainView.todayMovieCollectionView.rx.modelSelected(Movie.self),
-            likeButtonTapped: likeButtonTapped)
+            likeButtonTapped: likeButtonTapped,
+            profileTapped: cinemaMainView.profileView.rx.stackViewTap)
         let output = viewModel.transform(input: input)
         
+        // 최근 검색어
         output.searchList
             .drive(cinemaMainView.recentSearchCollectionView.rx.items(cellIdentifier: RecentSearchCollectionViewCell.identifier, cellType: RecentSearchCollectionViewCell.self)) { item, element, cell in
                 
-                
-                cell.deleteButtonTapped
+                cell.deleteButton.rx.tap
+                    .map { element }
                     .bind(to: deleteItem)
                     .disposed(by: cell.disposeBag)
                 
@@ -69,12 +69,21 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
             }
             .disposed(by: disposeBag)
         
+        output.searchQuery
+            .drive(with: self) { owner, value in
+                let vc = CinemaSearchViewController(query: value)
+                owner.navigationController?.pushViewController(vc, animated: true)
+            }
+            .disposed(by: disposeBag)
+        
         output.todayMovieList
             .drive(cinemaMainView.todayMovieCollectionView.rx.items(cellIdentifier: TodayMovieCollectionViewCell.identifier, cellType: TodayMovieCollectionViewCell.self)) { item, element, cell in
                 
-                cell.likeButtonTapped
+                cell.likeButton.rx.tap
+                    .map { element.id }
                     .bind(to: likeButtonTapped)
                     .disposed(by: cell.disposeBag)
+                
                 cell.configureUI(data: element)
             }
             .disposed(by: disposeBag)
@@ -91,11 +100,20 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
                 owner.cinemaMainView.profileView.configureLikeLabel(likeTitle: value)
             }
             .disposed(by: disposeBag)
-    }
-    
-    private func configureProfile() {
-        guard let user = UserManager.shared.currentUser else { return }
-        cinemaMainView.profileView.configureUI(data: user, like: LikeManager.shared.getAllLikeMovieIDs)
+        
+        output.profile
+            .drive(with: self) { owner, profile in
+                let (user, title) = profile
+                owner.cinemaMainView.profileView.configureUI(data: user, likeTitle: title)
+            }.disposed(by: disposeBag)
+        
+        output.presentNicknameSettingView
+            .drive(with: self) { owner, _ in
+                let nicknameSettingVC = NicknameSettingViewController(isDetailView: false, isModal: true)
+                let nav = BaseNavigationController(rootViewController: nicknameSettingVC)
+                owner.present(nav, animated: true)
+            }
+            .disposed(by: disposeBag)
     }
     
     func setupNavigation(title: String) {
@@ -113,31 +131,5 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
     private func setupCollectionView() {
         cinemaMainView.recentSearchCollectionView.register(RecentSearchCollectionViewCell.self, forCellWithReuseIdentifier: RecentSearchCollectionViewCell.identifier)
         cinemaMainView.todayMovieCollectionView.register(TodayMovieCollectionViewCell.self, forCellWithReuseIdentifier: TodayMovieCollectionViewCell.identifier)
-        
-        UserManager.shared.delegate = self
-    }
-    
-    func configureNotification() {
-        NotificationCenter.default.addObserver(self, selector: #selector(handleTapGestureAction), name: .profileViewTapped, object: nil)
-    }
-    
-    @objc func handleTapGestureAction() {
-        let nicknameSettingVC = NicknameSettingViewController(isDetailView: false, isModal: true)
-        let nav = BaseNavigationController(rootViewController: nicknameSettingVC)
-        present(nav, animated: true)
-    }
-}
-
-extension CinemaMainViewController: NicknameSettingVCDelegate {
-    func handleUserUpdate() {
-        guard let currentUser = UserManager.shared.currentUser else { return }
-        cinemaMainView.profileView.configureUI(data: currentUser, like: LikeManager.shared.likeList.value)
-    }
-}
-
-extension CinemaMainViewController: UserManagerDelegate {
-    func updateUserUI() {
-        guard let currentUser = UserManager.shared.currentUser else { return }
-        cinemaMainView.profileView.configureUserInfo(nickname: currentUser.nickname, date: currentUser.formattedDate)
     }
 }

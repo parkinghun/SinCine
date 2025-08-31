@@ -29,7 +29,7 @@ final class ProfileViewController: UIViewController, ConfigureViewControllerProt
         setupNavigation(title: "설정")
         configureProfile()
         configureTableView()
-        configureDelegation()
+//        configureDelegation()
     }
     
     private func configureTableView() {
@@ -38,8 +38,9 @@ final class ProfileViewController: UIViewController, ConfigureViewControllerProt
     }
     
     private func configureProfile() {
-        guard let user = UserManager.shared.currentUser else { return }
-        myProfileView.profileView.configureUI(data: user, like: LikeManager.shared.likeList.value)
+        #warning("수정 필요")
+        guard let user = UserManager.shared.currentUser.value else { return }
+        myProfileView.profileView.configureUI(data: user, likeTitle: "\(LikeManager.shared.likeList.value)")
     }
     
     func configureNotification() {
@@ -54,9 +55,9 @@ final class ProfileViewController: UIViewController, ConfigureViewControllerProt
         present(nav, animated: true)
     }
     
-    private func configureDelegation() {
-        UserManager.shared.delegate = self
-    }
+//    private func configureDelegation() {
+//        UserManager.shared.delegate = self
+//    }
 }
 
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
@@ -93,9 +94,9 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension ProfileViewController: UserManagerDelegate {
-    func updateUserUI() {
-        guard let user = UserManager.shared.currentUser else { return }
-        myProfileView.profileView.configureUserInfo(nickname: user.nickname, date: user.formattedDate)
-    }
-}
+//extension ProfileViewController: UserManagerDelegate {
+//    func updateUserUI() {
+//        guard let user = UserManager.shared.currentUser else { return }
+//        myProfileView.profileView.configureUserInfo(nickname: user.nickname, date: user.formattedDate)
+//    }
+//}

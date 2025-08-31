@@ -47,7 +47,7 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
     }
     
     func setUserNickname() {
-        guard let user = UserManager.shared.currentUser else { return }
+        guard let user = UserManager.shared.currentUser.value else { return }
         
         nicknameView.nicknameTextField.text = user.nickname
     }
