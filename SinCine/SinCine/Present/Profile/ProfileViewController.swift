@@ -6,97 +6,71 @@
 //
 
 import UIKit
-
-extension ProfileViewController {
-    enum Rows: String, CaseIterable {
-        case question = "자주 묻는 질문"
-        case inquiries = "1:1 문의"
-        case notice = "알림 설정"
-        case withdrawal = "탈퇴하기"
-    }
-}
+import RxSwift
+import RxCocoa
+import RxDataSources
 
 final class ProfileViewController: UIViewController, ConfigureViewControllerProtocol {
     
     private let myProfileView = MyProfileView()
-    private let rows = Rows.allCases
+    private let disposeBag = DisposeBag()
+    private let viewModel = ProfileViewModel()
+    
     override func loadView() {
         self.view = myProfileView
     }
     
     override func viewDidLoad() {
-        configureNotification()
         setupNavigation(title: "설정")
-        configureProfile()
-        configureTableView()
-//        configureDelegation()
+        bind()
     }
     
-    private func configureTableView() {
-        myProfileView.tableView.delegate = self
-        myProfileView.tableView.dataSource = self
-    }
-    
-    private func configureProfile() {
-        #warning("수정 필요")
-        guard let user = UserManager.shared.currentUser.value else { return }
-        myProfileView.profileView.configureUI(data: user, likeTitle: "\(LikeManager.shared.likeList.value)")
-    }
-    
-    func configureNotification() {
-        NotificationCenter.default.addObserver(self, selector: #selector(handleTapGestureAction), name: .profileViewTapped, object: nil)
-    }
-    
-    @objc func handleTapGestureAction() {
-        let nicknameSettingVC = NicknameSettingViewController(isDetailView: false, isModal: true)
+    private func bind() {
+        let input = ProfileViewModel.Input(
+            cellSelected: myProfileView.tableView.rx.modelSelected(String.self),
+            profileTapped: myProfileView.profileView.rx.stackViewTap
+        )
+        let output = viewModel.transform(input: input)
         
-        let nav = BaseNavigationController(rootViewController: nicknameSettingVC)
-                
-        present(nav, animated: true)
-    }
-    
-//    private func configureDelegation() {
-//        UserManager.shared.delegate = self
-//    }
-}
-
-extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return rows.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.identifier, for: indexPath) as? ProfileTableViewCell else { return UITableViewCell() }
-        
-        cell.configure(title: rows[indexPath.row].rawValue)
-        cell.selectionStyle = .none
-        
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == rows.count - 1 {
-            print(#function)
+        let dataSource = RxTableViewSectionedReloadDataSource<ProfileSection> { dataSource, tableView, indexPath, item in
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.identifier, for: indexPath) as? ProfileTableViewCell else { return UITableViewCell() }
             
-            showDeleteAlert(title: "탈퇴하기", message: "탈퇴를 하면 데이터가 모두 초기화됩니다. 탈퇴하시겠습니까?") {
-                UserManager.shared.deleteUSer()
-                
-                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                      let sceneDelegate = windowScene.delegate as? SceneDelegate else { return }
-                
-                sceneDelegate.setRootViewController()
-            }
+            cell.configure(title: item)
+            return cell
         }
+        
+        output.list
+            .drive(myProfileView.tableView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+        
+        output.presentAlert
+            .drive(with: self) { owner, value in
+                let (title, message) = value
+                owner.showDeleteAlert(title: title, message: message) {
+                    UserManager.shared.deleteUSer()
+                    
+                    guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                          let sceneDelegate = windowScene.delegate as? SceneDelegate else { return }
+                    
+                    sceneDelegate.setRootViewController()
+                }
+            }
+            .disposed(by: disposeBag)
+        
+        output.profile
+            .drive(with: self) { owner, value in
+                let (user, title) = value
+                owner.myProfileView.profileView.configureUI(data: user, likeTitle: title)
+
+            }
+            .disposed(by: disposeBag)
+        
+        output.presentNicknameSetting
+            .drive(with: self) { owner, _ in
+                let nicknameSettingVC = NicknameSettingViewController(isDetailView: false, isModal: true)
+                let nav = BaseNavigationController(rootViewController: nicknameSettingVC)
+                owner.present(nav, animated: true)
+            }
+            .disposed(by: disposeBag)
     }
 }
-
-//extension ProfileViewController: UserManagerDelegate {
-//    func updateUserUI() {
-//        guard let user = UserManager.shared.currentUser else { return }
-//        myProfileView.profileView.configureUserInfo(nickname: user.nickname, date: user.formattedDate)
-//    }
-//}

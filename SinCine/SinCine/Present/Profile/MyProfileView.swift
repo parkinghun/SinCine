@@ -16,6 +16,7 @@ final class MyProfileView: BaseView, ReusableViewProtocol {
         tv.backgroundColor = .clear
         tv.separatorStyle = .none
         tv.isScrollEnabled = false
+        tv.rowHeight = 50
         tv.register(ProfileTableViewCell.self, forCellReuseIdentifier: ProfileTableViewCell.identifier)
         return tv
     }()

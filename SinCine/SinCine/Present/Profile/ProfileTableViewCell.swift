@@ -60,6 +60,7 @@ private extension ProfileTableViewCell {
     
     func configureView() {
         self.backgroundColor = .clear
+        self.selectionStyle = .none
         wrapperView.backgroundColor = .clear
         separator.backgroundColor = .lightGray
     }
