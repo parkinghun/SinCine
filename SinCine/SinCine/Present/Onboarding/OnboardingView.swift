@@ -37,8 +37,6 @@ final class OnboardingView: BaseView {
     
     let startButton = BorderButton(title: "시작하기")
     
-    var closure: (() -> Void)?
-    
     override func configureHierachy() {
         addSubview(logoImageView)
         addSubview(onboardingLabel)
@@ -67,15 +65,6 @@ final class OnboardingView: BaseView {
             make.top.equalTo(descriptionLabel.snp.bottom).offset(40)
             make.height.equalTo(LayoutLiterals.buttonHeight)
         }
-    }
-    
-    override func configureView() {
-        startButton.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
-    }
-    
-    
-    @objc private func startButtonTapped() {
-        closure?()
     }
 }
 
