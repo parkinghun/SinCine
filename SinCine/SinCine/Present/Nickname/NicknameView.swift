@@ -8,16 +8,16 @@
 import UIKit
 import SnapKit
 
-protocol NicknameViewDelegate: AnyObject {
-    func handleEditButton()
-    func handleCompleteButton()
-}
+//protocol NicknameViewDelegate: AnyObject {
+//    func handleEditButton()
+//    func handleCompleteButton()
+//}
 
 final class NicknameView: BaseView {
     
-    weak var delegate: NicknameViewDelegate?
+//    weak var delegate: NicknameViewDelegate?
     var isDetailView: Bool?
-    var isModal: Bool?
+    var presentType: NicknamePresentType
     
     let nicknameTextField = {
         let tf = UITextField()
@@ -60,15 +60,15 @@ final class NicknameView: BaseView {
     }()
     
     
-    init(isDetaiView: Bool, isModal: Bool) {
+    init(isDetaiView: Bool, type: NicknamePresentType) {
         self.isDetailView = isDetaiView
-        self.isModal = isModal
+        self.presentType = type
         
         super.init(frame: .zero)
         configureHierachy()
         configureLayout()
         configureView()
-        setupAction()
+//        setupAction()
         configureUI()
     }
     
@@ -79,19 +79,19 @@ final class NicknameView: BaseView {
     func configureStateLabel(_ state: String) {
         stateLabel.text = state
     }
+//    
+//    private func setupAction() {
+//        editButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
+//        completeButton.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
+//    }
     
-    private func setupAction() {
-        editButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
-        completeButton.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
-    }
-    
-    @objc func editButtonTapped() {
-        delegate?.handleEditButton()
-    }
-    
-    @objc func completeButtonTapped() {
-        delegate?.handleCompleteButton()
-    }
+//    @objc func editButtonTapped() {
+//        delegate?.handleEditButton()
+//    }
+//    
+//    @objc func completeButtonTapped() {
+//        delegate?.handleCompleteButton()
+//    }
     
     override func configureHierachy() {
         addSubview(textFieldStackView)
@@ -129,8 +129,8 @@ final class NicknameView: BaseView {
     }
     
     private func configureUI() {
-        guard let isDetailView,
-              let isModal else { return }
+        guard let isDetailView else { return }
+//              let isModal else { return }
         
         if isDetailView {
             editButton.isHidden = true
@@ -140,7 +140,13 @@ final class NicknameView: BaseView {
             stateLabel.isHidden = true
         }
         
-        bottomStackView.isHidden = isModal
+        switch presentType {
+        case .modal:
+            bottomStackView.isHidden = true
+        case .navigation:
+            bottomStackView.isHidden = false
+        }
+//        bottomStackView.isHidden = isModal
     }
     
 }

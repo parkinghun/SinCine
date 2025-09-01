@@ -6,26 +6,31 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
-protocol NicknameSettingVCDelegate: AnyObject {
-    func handleUserUpdate()
-}
+
+//protocol NicknameSettingVCDelegate: AnyObject {
+//    func handleUserUpdate()
+//}
 
 final class NicknameSettingViewController: UIViewController, ConfigureViewControllerProtocol {
     
-    weak var delegate: NicknameViewDelegate?
-    weak var settingDelegate: NicknameSettingVCDelegate?
+//    weak var delegate: NicknameViewDelegate?
+//    weak var settingDelegate: NicknameSettingVCDelegate?
     
     let nicknameView: NicknameView
     let isDetailView: Bool
-    let isModal: Bool
+    let presentType: NicknamePresentType
     var valid = false
     var validMessage = StringLiterals.NicknameState.numberOfCharacters.rawValue
+    private let disposeBag = DisposeBag()
+    private let viewModel = NicknameSettingViewModel()
     
-    init(isDetailView: Bool, isModal: Bool) {
+    init(isDetailView: Bool, type: NicknamePresentType) {
         self.isDetailView = isDetailView
-        self.isModal = isModal
-        self.nicknameView = .init(isDetaiView: isDetailView, isModal: isModal)
+        self.presentType = type
+        self.nicknameView = .init(isDetaiView: isDetailView, type: type)
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -41,19 +46,48 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupDelegate()
+//        setupDelegate()
         setupNavigationItem()
-        setUserNickname()
+//        setUserNickname()
+        bind()
     }
     
-    func setUserNickname() {
-        guard let user = UserManager.shared.currentUser.value else { return }
+    func bind() {
+        let input = NicknameSettingViewModel.Input(
+            backButtonTapped: navigationItem.leftBarButtonItem?.rx.tap,
+            saveButtonTapped: navigationItem.rightBarButtonItem?.rx.tap,
+            editButtonTapped: nicknameView.editButton.rx.tap,
+            nickname: nicknameView.nicknameTextField.rx.text.orEmpty,
+            completeButtonTapped: nicknameView.completeButton.rx.tap
+        )
+        let output = viewModel.transform(input: input)
         
-        nicknameView.nicknameTextField.text = user.nickname
+        output.currentUser
+            .drive(with: self) { owner, value in
+                owner.nicknameView.nicknameTextField.text = value.nickname
+            }
+            .disposed(by: disposeBag)
+        
+        output.nickname
+            .drive(with: self) { owner, value in
+                let nextVC = NicknameDetailViewController()
+                
+                nextVC.configureTextField(text: value)
+                nextVC.presentType = self.presentType
+                owner.navigationController?.pushViewController(nextVC, animated: true)
+            }
+            .disposed(by: disposeBag)
     }
+    
+//    func setUserNickname() {
+//        guard let user = UserManager.shared.currentUser.value else { return }
+//        
+//        nicknameView.nicknameTextField.text = user.nickname
+//    }
     
     func setupNavigationItem() {
-        if isModal {
+        switch presentType {
+        case .modal:
             navigationItem.title = StringLiterals.NavigationTitle.editNickname.rawValue
             
             let leftBarButtonItem = UIBarButtonItem(image: Images.xmark, style: .plain, target: self, action: #selector(leftBarButtonTapped))
@@ -65,9 +99,9 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
             navigationItem.leftBarButtonItem = leftBarButtonItem
             navigationItem.rightBarButtonItem = rightBarButtonItem
             navigationItem.backButtonDisplayMode = .minimal
-            
-        } else {
+        case .navigation:
             setupNavigation(title: "닉네임 설정")
+
         }
     }
     
@@ -80,7 +114,7 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
             guard let nickname = nicknameView.nicknameTextField.text else { return }
             
             UserManager.shared.saveUser(User(nickname: nickname))
-            settingDelegate?.handleUserUpdate()
+//            settingDelegate?.handleUserUpdate()
             dismiss(animated: true)
 
             guard let sceneDelegate = getSceneDelegate(),
@@ -95,21 +129,21 @@ final class NicknameSettingViewController: UIViewController, ConfigureViewContro
         nicknameView.configureTextField(text: text)
     }
     
-    private func setupDelegate() {
-        nicknameView.delegate = self
-    }
+//    private func setupDelegate() {
+//        nicknameView.delegate = self
+//    }
 }
 
 extension NicknameSettingViewController: NicknameViewDelegate {
     
-    func handleEditButton() {
-        let nextVC = NicknameDetailViewController()
-        guard let text = nicknameView.nicknameTextField.text else { return }
-        
-        nextVC.configureTextField(text: text)
-        nextVC.isModal = self.isModal
-        navigationController?.pushViewController(nextVC, animated: true)
-    }
+//    func handleEditButton() {
+//        let nextVC = NicknameDetailViewController()
+//        guard let text = nicknameView.nicknameTextField.text else { return }
+//        
+//        nextVC.configureTextField(text: text)
+//        nextVC.presentType = self.presentType
+//        navigationController?.pushViewController(nextVC, animated: true)
+//    }
     
     func handleCompleteButton() {
         if valid {

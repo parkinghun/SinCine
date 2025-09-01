@@ -7,13 +7,12 @@
 
 import Foundation
 
-enum UserDefaultsKeys: String {
-    case user
-    case like
-    case recentSearch
-}
-
 final class UserDefaultsManager<T: Codable> {
+    enum UserDefaultsKeys: String {
+        case user
+        case like
+        case recentSearch
+    }
     
     private let userDefaults = UserDefaults.standard
     private let key: String

@@ -109,7 +109,7 @@ final class CinemaMainViewController: UIViewController, ConfigureViewControllerP
         
         output.presentNicknameSettingView
             .drive(with: self) { owner, _ in
-                let nicknameSettingVC = NicknameSettingViewController(isDetailView: false, isModal: true)
+                let nicknameSettingVC = NicknameSettingViewController(isDetailView: false, type: .modal)
                 let nav = BaseNavigationController(rootViewController: nicknameSettingVC)
                 owner.present(nav, animated: true)
             }

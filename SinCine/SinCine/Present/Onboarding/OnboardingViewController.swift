@@ -31,7 +31,9 @@ final class OnboardingViewController: UIViewController, ConfigureViewControllerP
         
         output.pushNicknameSetting
             .drive(with: self) { owner, _ in
-                let vc = NicknameSettingViewController(isDetailView: false, isModal: false)
+//                let vc = NicknameSettingViewController(isDetailView: false, isModal: false)
+
+                let vc = NicknameSettingViewController(isDetailView: false, type: .navigation)
                 owner.navigationController?.pushViewController(vc, animated: true)
             }
             .disposed(by: disposeBag)
